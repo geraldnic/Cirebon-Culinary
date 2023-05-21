@@ -29,14 +29,14 @@ import {
 
 import { Link } from 'react-router-dom';
 const RestaurantList = () => {
-  const [places, setPlaces] = useState();
+  const [restaurant, setRestaurant] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedId, setSelectedId] = useState();
   const [updateMessage, setUpdateMessage] = useState();
 
   useEffect(() => {
-    axios.get('http://localhost:3001/marker/getmarker').then(res => {
-      setPlaces(res?.data ?? []);
+    axios.get('http://localhost:3001/restaurant/getrestaurant').then(res => {
+      setRestaurant(res?.data ?? []);
     });
   }, [updateMessage]);
 
@@ -47,7 +47,7 @@ const RestaurantList = () => {
 
   const handleDelete = async () => {
     await axios
-      .post('http://localhost:3001/marker/deletemarker', {
+      .post('http://localhost:3001/restaurant/deleterestaurant', {
         id: selectedId,
       })
       .then(res => {
@@ -86,15 +86,25 @@ const RestaurantList = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {places &&
-              places.map(item => {
+            {restaurant &&
+              restaurant.map(item => {
                 tableNumber += 1;
+                console.log(item.foodId);
                 return (
                   <Tr key={item._id}>
-                    <Td>{tableNumber}</Td>
-                    <Td>{item._id}</Td>
-                    <Td>{item.name}</Td>
-                    <Td>{`(${item.position.lat}, ${item.position.lng})`}</Td>
+                    <Td maxW="200px" whiteSpace="initial">{tableNumber}</Td>
+                    <Td maxW="200px" whiteSpace="initial">{item._id}</Td>
+                    <Td maxW="200px" whiteSpace="initial">{item.name}</Td>
+                    <Td maxW="200px" whiteSpace="initial">{item.imageUrl}</Td>
+                    <Td maxW="200px" whiteSpace="initial">{`(${item.position.lat}, ${item.position.lng})`}</Td>
+                    <Td maxW="210px" whiteSpace="initial">
+                    {item.foodId.map(id => (
+                        <p>{id}</p>
+                    ))}
+                    </Td>
+                    <Td maxW="200px" whiteSpace="initial" textAlign='center'>{item.price}</Td>
+                    <Td maxW="200px" whiteSpace="initial" textAlign='center'>{item.service}</Td>
+                    <Td maxW="200px" whiteSpace="initial" textAlign='center'>{item.taste}</Td>
                     <Td>
                       <Link to={`edit/${item._id}`}>
                         <Button variant="solid" colorScheme="blue">
@@ -120,7 +130,7 @@ const RestaurantList = () => {
         <Link to="add">
           <Button variant="solid" colorScheme="green" mt={[5, null, 10]}>
             <RiAddCircleFill style={{ marginRight: '5px' }} />
-            Tambah Tempat Wisata
+            Tambah Tempat Kuliner
           </Button>
         </Link>
       </Center>
@@ -129,7 +139,7 @@ const RestaurantList = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Remove Place</ModalHeader>
+          <ModalHeader>Remove Restaurant</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text>Yakin mau hapus tempat ini?</Text>

@@ -1,7 +1,6 @@
-import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { GoogleApiWrapper } from 'google-maps-react';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import _ from 'lodash';
 
 import { BiArrowBack } from 'react-icons/bi';
 
@@ -26,33 +25,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import HistoryTable from '../components/rekomendasi/historyTable';
-
-const styles = [
-  {
-    elementType: 'labels',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative.land_parcel',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative.neighborhood',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-];
+import FindRestaurant from '../components/rekomendasi/findRestaurant';
 
 const Rekomendasi = props => {
   const [marker, setMarker] = useState([]);
@@ -82,9 +55,46 @@ const Rekomendasi = props => {
     id: '',
     name: '',
   });
-
+  const [selectedCriteria, setSelectedCriteria] = useState({
+    id: '',
+    name: '',
+  });
   const [selectedPlace, setSelectedPlace] = useState();
 
+  const [priceToService, setPriceToService] = useState();
+  const [serviceToPrice, setServiceToPrice] = useState();
+  const [priceToTaste, setPriceToTaste] = useState();
+  const [tasteToPrice, setTasteToPrice] = useState();
+  const [priceToDistance, setPriceToDistance] = useState();
+  const [distanceToPrice, setDistanceToPrice] = useState();
+  const [serviceToTaste, setServiceToTaste] = useState();
+  const [tasteToService, setTasteToService] = useState();
+  const [serviceToDistance, setServiceToDistance] = useState();
+  const [distanceToService, setDistanceToService] = useState();
+  const [tasteToDistance, setTasteToDistance] = useState();
+  const [distanceToTaste, setDistanceToTaste] = useState();
+  const [priceToPrice, setPriceToPrice] = useState();
+  const [serviceToService, setServiceToService] = useState();
+  const [tasteToTaste, setTasteToTaste] = useState();
+  const [distanceToDistance, setDistanceToDistance] = useState();
+
+  console.log(priceToService);
+  console.log(serviceToPrice);
+  console.log(priceToTaste);
+  console.log(tasteToPrice);
+  console.log(priceToDistance);
+  console.log(distanceToPrice);
+  console.log(serviceToTaste);
+  console.log(tasteToService);
+  console.log(serviceToDistance);
+  console.log(distanceToService);
+  console.log(tasteToDistance);
+  console.log(distanceToTaste);
+  console.log(serviceToService);
+  console.log(tasteToTaste);
+  console.log(distanceToDistance);
+
+  //FETCH MARKER AND FOOD TYPE
   useEffect(() => {
     axios.get('http://localhost:3001/marker/getmarker').then(res => {
       setMarker(res?.data ?? []);
@@ -95,6 +105,7 @@ const Rekomendasi = props => {
     });
   }, []);
 
+  //FETCH FOOD INGREDIENT
   useEffect(() => {
     if (selectedType.id) {
       const getIngredient = async () => {
@@ -114,6 +125,7 @@ const Rekomendasi = props => {
     }
   }, [selectedType]);
 
+  //FETCH FOOD BROTH
   useEffect(() => {
     if (selectedIngredient.id) {
       const getBroth = async () => {
@@ -133,6 +145,7 @@ const Rekomendasi = props => {
     }
   }, [selectedIngredient]);
 
+  //FETCH FOOD SERVING
   useEffect(() => {
     if (selectedBroth.id) {
       const getServing = async () => {
@@ -153,6 +166,7 @@ const Rekomendasi = props => {
     }
   }, [selectedBroth]);
 
+  //FETCH FOOD RESULT
   useEffect(() => {
     if (selectedServing.id) {
       const getFood = async () => {
@@ -174,12 +188,6 @@ const Rekomendasi = props => {
       getFood();
     }
   }, [selectedServing]);
-
-  console.log(food);
-
-  const styledMap = new props.google.maps.StyledMapType(styles, {
-    name: 'Styled Map',
-  });
 
   const handleClick = (mapProps, map, clickEvent) => {
     const lat = clickEvent.latLng.lat();
@@ -205,6 +213,155 @@ const Rekomendasi = props => {
     setSelectedIngredient({});
     setSelectedBroth({});
     setSelectedServing({});
+  };
+
+  //AHP
+  const calcValue = (price, service, taste, distance) => {
+    let pts, stp, ptt, ttp, ptd, dtp, stt, tts, std, dts, ttd, dtt;
+    let ptp = 1;
+    let sts = 1;
+    let ttt = 1;
+    let dtd = 1;
+
+    if (price < service) {
+      pts = 1 / ((price - service) * -1 + 1);
+      stp = (price - service) * -1 + 1;
+    } else if (price > service) {
+      pts = price - service + 1;
+      stp = 1 / (price - service + 1);
+    } else {
+      pts = 1;
+      stp = 1;
+    }
+
+    if (price < taste) {
+      ptt = 1 / ((price - taste) * -1 + 1);
+      ttp = (price - taste) * -1 + 1;
+    } else if (price > taste) {
+      ptt = price - taste + 1;
+      ttp = 1 / (price - taste + 1);
+    } else {
+      ptt = 1;
+      ttp = 1;
+    }
+
+    if (price < distance) {
+      ptd = 1 / ((price - distance) * -1 + 1);
+      dtp = (price - distance) * -1 + 1;
+    } else if (price > distance) {
+      ptd = price - distance + 1;
+      dtp = 1 / (price - distance + 1);
+    } else {
+      ptd = 1;
+      dtp = 1;
+    }
+
+    if (service < taste) {
+      stt = 1 / ((service - taste) * -1 + 1);
+      tts = (service - taste) * -1 + 1;
+    } else if (service > taste) {
+      stt = service - taste + 1;
+      tts = 1 / (service - taste + 1);
+    } else {
+      stt = 1;
+      tts = 1;
+    }
+
+    if (service < distance) {
+      std = 1 / ((service - distance) * -1 + 1);
+      dts = (service - distance) * -1 + 1;
+    } else if (service > distance) {
+      std = service - distance + 1;
+      dts = 1 / (service - distance + 1);
+    } else {
+      std = 1;
+      dts = 1;
+    }
+
+    if (taste < distance) {
+      ttd = 1 / ((taste - distance) * -1 + 1);
+      dtt = (taste - distance) * -1 + 1;
+    } else if (taste > distance) {
+      ttd = taste - distance + 1;
+      dtt = 1 / (taste - distance + 1);
+    } else {
+      ttd = 1;
+      dtt = 1;
+    }
+
+    //Matrix Berpasangan Kriteria
+    let c1 = [ptp, pts, ptt, ptd];
+    let c2 = [stp, sts, stt, std];
+    let c3 = [ttp, tts, ttt, ttd];
+    let c4 = [dtp, dts, dtt, dtd];
+    let total = [];
+    for (let i = 0; i < 4; i++) {
+      total[i] = c1[i] + c2[i] + c3[i] + c4[i];
+    }
+
+    //Matrix Ternormalisasi
+    for (let i = 0; i < 4; i++) {
+      c1[i] = c1[i] / total[i];
+      c2[i] = c2[i] / total[i];
+      c3[i] = c3[i] / total[i];
+      c4[i] = c4[i] / total[i];
+    }
+
+    //Jumlah tiap kolom pada matrix
+    let jumlah = [0, 0, 0, 0];
+    for (let i = 0; i < 4; i++) {
+      jumlah[0] = jumlah[0] + c1[i];
+    }
+    for (let i = 0; i < 4; i++) {
+      jumlah[1] = jumlah[1] + c2[i];
+    }
+    for (let i = 0; i < 4; i++) {
+      jumlah[2] = jumlah[2] + c3[i];
+    }
+    for (let i = 0; i < 4; i++) {
+      jumlah[3] = jumlah[3] + c4[i];
+    }
+
+    //Mencari bobot tiap kriteria (Eigen Vector) 
+    let eigen = [];
+    for (let i = 0; i < 4; i++) {
+      eigen[i] = jumlah[i] / 4;
+    }
+
+    //Mengukur konsistensi
+    let lambdaMax = 0;
+    for (let i = 0; i < 4; i++) {
+      lambdaMax = lambdaMax + (eigen[i] * total[i]);
+    }
+
+    let CI = 0;
+    CI = (lambdaMax-4) / 3;
+
+    let CR = 0;
+    CR = CI / 0.9; //CR <= 0.1 === konsisten
+
+    console.log(jumlah);
+    console.log(eigen);
+    console.log(lambdaMax);
+    console.log(CI);
+    console.log(CR);
+
+    setPriceToService(pts);
+    setServiceToPrice(stp);
+    setPriceToTaste(ptt);
+    setTasteToPrice(ttp);
+    setPriceToDistance(ptd);
+    setDistanceToPrice(dtp);
+    setServiceToTaste(stt);
+    setTasteToService(tts);
+    setServiceToDistance(std);
+    setDistanceToService(dts);
+    setTasteToDistance(ttd);
+    setDistanceToTaste(dtt);
+    setPriceToPrice(ptp);
+    setServiceToService(sts);
+    setTasteToTaste(ttt);
+    setDistanceToDistance(dtd);
   };
 
   const renderMapComponent = () => {
@@ -422,76 +579,92 @@ const Rekomendasi = props => {
             <BiArrowBack /> Back
           </Button>
           <Box maxW="1100px" align="center" mx="auto">
-          <Center>
-            <Flex>
-              <Box className="container">
-                {food.map(item => (
-                  <Card maxW="sm" align="center" mx="auto">
-                    <Text
-                      fontSize="2xl"
-                      fontWeight="bold"
-                      align="center"
-                      mt={5}
-                    >
-                      Makanan Sesuai Kriteriamu
-                    </Text>
-                    <CardBody>
-                      <Image src={item.imageUrl} borderRadius="lg" />
-                      <Stack mt="6" spacing="3">
-                        <Text
-                          color={'green.500'}
-                          textTransform={'uppercase'}
-                          fontWeight={800}
-                          fontSize={'sm'}
-                          letterSpacing={1.1}
-                        >
-                          {selectedType.name +
-                            ' - ' +
-                            selectedIngredient.name +
-                            ' - ' +
-                            selectedBroth.name +
-                            ' - ' +
-                            selectedServing.name}
-                        </Text>
-                      </Stack>
-                      <Stack mt="6" spacing="3">
-                        <Heading size="md">{item.name}</Heading>
-                        <Text>{item.description}</Text>
-                      </Stack>
-                    </CardBody>
-                    <Divider />
-                    <CardFooter>
-                      <ButtonGroup spacing="2">
-                        <Button variant="solid" colorScheme="blue">
-                          Cari Tempat Kuliner
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          colorScheme="blue"
-                          onClick={reset}
-                        >
-                          Cari menu lain
-                        </Button>
-                      </ButtonGroup>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </Box>
-            </Flex>
-          </Center>
-          <Box mt={10} align="center">
-            <HistoryTable
-              place={selectedPlace.name}
-              type={selectedType.name}
-              ingredient={selectedIngredient.name}
-              broth={selectedBroth.name}
-              serving={selectedServing.name}
-            />
-          </Box>
+            <Center>
+              <Flex>
+                <Box className="container">
+                  {food.map(item => (
+                    <Card maxW="sm" align="center" mx="auto">
+                      <Text
+                        fontSize="2xl"
+                        fontWeight="bold"
+                        align="center"
+                        mt={5}
+                      >
+                        Makanan Sesuai Kriteriamu
+                      </Text>
+                      <CardBody>
+                        <Image src={item.imageUrl} borderRadius="lg" />
+                        <Stack mt="6" spacing="3">
+                          <Text
+                            color={'green.500'}
+                            textTransform={'uppercase'}
+                            fontWeight={800}
+                            fontSize={'sm'}
+                            letterSpacing={1.1}
+                          >
+                            {selectedType.name +
+                              ' - ' +
+                              selectedIngredient.name +
+                              ' - ' +
+                              selectedBroth.name +
+                              ' - ' +
+                              selectedServing.name}
+                          </Text>
+                        </Stack>
+                        <Stack mt="6" spacing="3">
+                          <Heading size="md">{item.name}</Heading>
+                          <Text>{item.description}</Text>
+                        </Stack>
+                      </CardBody>
+                      <Divider />
+                      <CardFooter>
+                        <ButtonGroup spacing="2">
+                          <Button
+                            variant="solid"
+                            colorScheme="blue"
+                            onClick={() =>
+                              setSelectedFood({ id: item._id, name: item.name })
+                            }
+                          >
+                            Cari Tempat Kuliner
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            colorScheme="blue"
+                            onClick={reset}
+                          >
+                            Cari menu lain
+                          </Button>
+                        </ButtonGroup>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </Box>
+              </Flex>
+            </Center>
+            <Box mt={10} align="center">
+              <HistoryTable
+                place={selectedPlace.name}
+                type={selectedType.name}
+                ingredient={selectedIngredient.name}
+                broth={selectedBroth.name}
+                serving={selectedServing.name}
+              />
+            </Box>
           </Box>
         </Box>
       );
     }
+  };
+  const renderRestaurant = () => {
+    if (selectedFood.id && !selectedCriteria.id) {
+      return (
+        <>
+          <FindRestaurant calcValue={calcValue} />
+        </>
+      );
+    }
+    return null;
   };
   return (
     <div className="container">
@@ -501,6 +674,7 @@ const Rekomendasi = props => {
       {renderBrothCard()}
       {renderServingCard()}
       {renderFoodCard()}
+      {renderRestaurant()}
     </div>
   );
 };

@@ -26,7 +26,7 @@ import axios from 'axios';
 
 import AuthModal from '../../../components/auth/modal';
 
-import { MdRestaurantMenu } from 'react-icons/md'
+import { GiHotMeal } from 'react-icons/gi'
 
 const AddFood = () => {
   // Temp State
@@ -240,7 +240,7 @@ const AddFood = () => {
                 <Stack align={'center'} m={'5'}>
                   <Center>
                     <Circle size={14} border="1px" borderColor="black">
-                      <MdRestaurantMenu />
+                      <GiHotMeal />
                     </Circle>
                   </Center>
                   <Heading fontSize={'4xl'} textAlign="center">

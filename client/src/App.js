@@ -30,7 +30,9 @@ import AddTouristAttraction from './pages/admin/add/addTouristAttraction';
 import EditTouristAttraction from './pages/admin/edit/touristAttractionEdit';
 import AddFood from './pages/admin/add/addFood';
 import EditFood from './pages/admin/edit/foodEdit';
-import HistoryTable from './components/rekomendasi/historyTable';
+import AddRestaurant from './pages/admin/add/addRestaurant';
+import EditRestaurant from './pages/admin/edit/restaurantEdit';
+import FindRestaurant from './components/rekomendasi/findRestaurant';
 
 const router = createBrowserRouter([
   {
@@ -83,8 +85,16 @@ const router = createBrowserRouter([
     element: <EditFood />,
   },
   {
-    path: "/historytable",
-    element: <HistoryTable />,
+    path: "/admin/restaurantlist/add",
+    element: <AddRestaurant />,
+  },
+  {
+    path: "/admin/restaurantlist/edit/:id",
+    element: <EditRestaurant />,
+  },
+  {
+    path: "/findrestaurant",
+    element: <FindRestaurant />,
   },
 ]);
 
