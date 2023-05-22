@@ -1,6 +1,7 @@
 import { GoogleApiWrapper } from 'google-maps-react';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getDistance } from 'geolib';
 
 import { BiArrowBack } from 'react-icons/bi';
 
@@ -34,6 +35,7 @@ const Rekomendasi = props => {
   const [broth, setBroth] = useState([]);
   const [serving, setServing] = useState([]);
   const [food, setFood] = useState([]);
+  const [restaurant, setRestaurant] = useState([]);
 
   const [selectedType, setSelectedType] = useState({
     id: '',
@@ -61,39 +63,6 @@ const Rekomendasi = props => {
   });
   const [selectedPlace, setSelectedPlace] = useState();
 
-  const [priceToService, setPriceToService] = useState();
-  const [serviceToPrice, setServiceToPrice] = useState();
-  const [priceToTaste, setPriceToTaste] = useState();
-  const [tasteToPrice, setTasteToPrice] = useState();
-  const [priceToDistance, setPriceToDistance] = useState();
-  const [distanceToPrice, setDistanceToPrice] = useState();
-  const [serviceToTaste, setServiceToTaste] = useState();
-  const [tasteToService, setTasteToService] = useState();
-  const [serviceToDistance, setServiceToDistance] = useState();
-  const [distanceToService, setDistanceToService] = useState();
-  const [tasteToDistance, setTasteToDistance] = useState();
-  const [distanceToTaste, setDistanceToTaste] = useState();
-  const [priceToPrice, setPriceToPrice] = useState();
-  const [serviceToService, setServiceToService] = useState();
-  const [tasteToTaste, setTasteToTaste] = useState();
-  const [distanceToDistance, setDistanceToDistance] = useState();
-
-  console.log(priceToService);
-  console.log(serviceToPrice);
-  console.log(priceToTaste);
-  console.log(tasteToPrice);
-  console.log(priceToDistance);
-  console.log(distanceToPrice);
-  console.log(serviceToTaste);
-  console.log(tasteToService);
-  console.log(serviceToDistance);
-  console.log(distanceToService);
-  console.log(tasteToDistance);
-  console.log(distanceToTaste);
-  console.log(serviceToService);
-  console.log(tasteToTaste);
-  console.log(distanceToDistance);
-
   //FETCH MARKER AND FOOD TYPE
   useEffect(() => {
     axios.get('http://localhost:3001/marker/getmarker').then(res => {
@@ -102,6 +71,10 @@ const Rekomendasi = props => {
 
     axios.get('http://localhost:3001/food/gettype').then(res => {
       setType(res?.data ?? []);
+    });
+
+    axios.get('http://localhost:3001/restaurant/getrestaurant').then(res => {
+      setRestaurant(res?.data ?? []);
     });
   }, []);
 
@@ -322,7 +295,7 @@ const Rekomendasi = props => {
       jumlah[3] = jumlah[3] + c4[i];
     }
 
-    //Mencari bobot tiap kriteria (Eigen Vector) 
+    //Mencari bobot tiap kriteria (Eigen Vector)
     let eigen = [];
     for (let i = 0; i < 4; i++) {
       eigen[i] = jumlah[i] / 4;
@@ -331,37 +304,197 @@ const Rekomendasi = props => {
     //Mengukur konsistensi
     let lambdaMax = 0;
     for (let i = 0; i < 4; i++) {
-      lambdaMax = lambdaMax + (eigen[i] * total[i]);
+      lambdaMax = lambdaMax + eigen[i] * total[i];
     }
 
     let CI = 0;
-    CI = (lambdaMax-4) / 3;
+    CI = (lambdaMax - 4) / 3;
 
     let CR = 0;
     CR = CI / 0.9; //CR <= 0.1 === konsisten
 
-    console.log(jumlah);
-    console.log(eigen);
-    console.log(lambdaMax);
-    console.log(CI);
-    console.log(CR);
+    // Implementasi TOPSIS
+    // Matrix Keputusan
+    const decisionM = restaurant.map(item => {
+      const distance = getDistance(
+        {
+          latitude: selectedPlace.location.lat,
+          longitude: selectedPlace.location.lng,
+        },
+        { latitude: item.position.lat, longitude: item.position.lng }
+      );
 
-    setPriceToService(pts);
-    setServiceToPrice(stp);
-    setPriceToTaste(ptt);
-    setTasteToPrice(ttp);
-    setPriceToDistance(ptd);
-    setDistanceToPrice(dtp);
-    setServiceToTaste(stt);
-    setTasteToService(tts);
-    setServiceToDistance(std);
-    setDistanceToService(dts);
-    setTasteToDistance(ttd);
-    setDistanceToTaste(dtt);
-    setPriceToPrice(ptp);
-    setServiceToService(sts);
-    setTasteToTaste(ttt);
-    setDistanceToDistance(dtd);
+      let priceValue;
+      if (item.price <= 1) {
+        priceValue = 1;
+      } else if (item.price > 1 && item.price <= 2) {
+        priceValue = 2;
+      } else if (item.price > 2 && item.price <= 3) {
+        priceValue = 3;
+      } else if (item.price > 3 && item.price <= 4) {
+        priceValue = 4;
+      } else {
+        priceValue = 5;
+      }
+
+      let serviceValue;
+      if (item.service <= 1) {
+        serviceValue = 1;
+      } else if (item.service > 1 && item.service <= 2) {
+        serviceValue = 2;
+      } else if (item.service > 2 && item.service <= 3) {
+        serviceValue = 3;
+      } else if (item.service > 3 && item.service <= 4) {
+        serviceValue = 4;
+      } else {
+        serviceValue = 5;
+      }
+
+      let tasteValue;
+      if (item.taste <= 1) {
+        tasteValue = 1;
+      } else if (item.taste > 1 && item.taste <= 2) {
+        tasteValue = 2;
+      } else if (item.taste > 2 && item.taste <= 3) {
+        tasteValue = 3;
+      } else if (item.taste > 3 && item.taste <= 4) {
+        tasteValue = 4;
+      } else {
+        tasteValue = 5;
+      }
+
+      let distanceValue;
+      if (distance > 8000) {
+        distanceValue = 1;
+      } else if (distance <= 8000 && distance > 6000) {
+        distanceValue = 2;
+      } else if (distance <= 6000 && distance > 4000) {
+        distanceValue = 3;
+      } else if (distance <= 4000 && distance > 2000) {
+        distanceValue = 4;
+      } else {
+        distanceValue = 5;
+      }
+      return [priceValue, serviceValue, tasteValue, distanceValue];
+    });
+
+    //Normalisasi Matrix Keputusan
+    let x1 = 0;
+    for (let i = 0; i < decisionM.length; i++) {
+      x1 = x1 + Math.pow(decisionM[i][0], 2);
+    }
+    x1 = Math.sqrt(x1);
+
+    let x2 = 0;
+    for (let i = 0; i < decisionM.length; i++) {
+      x2 = x2 + Math.pow(decisionM[i][1], 2);
+    }
+
+    let x3 = 0;
+    for (let i = 0; i < decisionM.length; i++) {
+      x3 = x3 + Math.pow(decisionM[i][2], 2);
+    }
+
+    let x4 = 0;
+    for (let i = 0; i < decisionM.length; i++) {
+      x4 = x4 + Math.pow(decisionM[i][3], 2);
+    }
+
+    //Normalisasi Baris 1
+    for (let i = 0; i < decisionM.length; i++) {
+      decisionM[i][0] = decisionM[i][0] / x1;
+    }
+
+    //Normalisasi Baris 2
+    for (let i = 0; i < decisionM.length; i++) {
+      decisionM[i][1] = decisionM[i][1] / x2;
+    }
+
+    //Normalisasi Baris 3
+    for (let i = 0; i < decisionM.length; i++) {
+      decisionM[i][2] = decisionM[i][2] / x3;
+    }
+
+    //Normalisasi Baris 4
+    for (let i = 0; i < decisionM.length; i++) {
+      decisionM[i][3] = decisionM[i][3] / x4;
+    }
+
+    //Normalisasi Matrix Terbobot
+    for (let j = 0; j < 4; j++) {
+      for (let i = 0; i < decisionM.length; i++) {
+        decisionM[i][j] = decisionM[i][j] * eigen[j];
+      }
+    }
+
+    //Mencari Solusi Ideal Positif dan Negatif
+    let idealSolution = [];
+    let aPlus = [];
+    let aMinus = [];
+
+    //Solusi Ideal Positif
+    for (let j = 0; j < 4; j++) {
+      let max = decisionM[0][j];
+      for (let i = 1; i < decisionM.length; i++) {
+        const currentValue = decisionM[i][j];
+        if (currentValue > max) {
+          max = currentValue;
+        }
+      }
+      aPlus[j] = max;
+    }
+
+    //Solusi Ideal Negatif
+    for (let j = 0; j < 4; j++) {
+      let min = decisionM[0][j];
+      for (let i = 1; i < decisionM.length; i++) {
+        const currentValue = decisionM[i][j];
+        if (currentValue < min) {
+          min = currentValue;
+        }
+      }
+      aMinus[j] = min;
+    }
+
+    // Solusi Ideal Positif dan Negatif
+    idealSolution = [aPlus, aMinus];
+
+    //Menghitung Jarak Solusi Ideal Positif dan Negatif
+    //Jarak Solusi Ideal Positif
+    let dPlus = 0;
+    let dMinus = 0;
+    let plusTemp = 0;
+    let minusTemp = 0;
+    const d = decisionM.map(item => {
+      for (let j = 0; j < 4; j++) {
+        plusTemp = plusTemp + Math.pow((item[j] + idealSolution[0][j]), 2);
+      }
+      for (let j = 0; j < 4; j++) {
+        minusTemp = minusTemp + Math.pow((item[j] + idealSolution[1][j]), 2);
+      }
+      minusTemp = Math.sqrt(minusTemp);
+      dMinus = minusTemp;
+
+      plusTemp = Math.sqrt(plusTemp);
+      dPlus = plusTemp;
+      plusTemp = 0;
+
+      console.log(item[0])
+      return [dPlus, dMinus];
+    });
+
+    //Mencari Nilai Preferensi
+    //Matrix Preferensi
+    let preferenceM = [];
+    for(let i = 0; i<decisionM.length; i++){
+      preferenceM[i] = d[i][1] / (d[i][1] + d[i][0])
+    }
+
+    console.log(preferenceM);
+    console.log(d);
+    console.log(idealSolution);
+    console.log(x1);
+    console.log(decisionM);
   };
 
   const renderMapComponent = () => {
