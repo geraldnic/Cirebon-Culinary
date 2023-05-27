@@ -13,8 +13,6 @@ import {
   FormLabel,
 } from '@chakra-ui/react';
 
-import { Link } from 'react-router-dom';
-
 import { FaLock } from 'react-icons/fa';
 import AuthModal from './modal';
 
@@ -46,7 +44,7 @@ const LoginForm = props => {
 
       if (response.data.code === 200) {
         setCookies('access_token', response.data.token);
-        window.localStorage.setItem('userID', response.data.userID);
+        window.localStorage.setItem('username', response.data.username);
         navigate('/admin');
       }
 
@@ -65,13 +63,13 @@ const LoginForm = props => {
   return (
     <>
       <form onSubmit={onSubmit}>
-        <Stack spacing={4}>
+        <Stack spacing={4} color="#00203D" borderColor="#00203D">
           <Center>
             <Circle size={14} border="1px" borderColor="black">
               <FaLock />
             </Circle>
           </Center>
-          <Heading fontSize={'4xl'} pb={5}>
+          <Heading fontSize={'4xl'} pb={3} align='center'>
             {props.formCaption}
           </Heading>
           <FormControl id="username">
@@ -79,6 +77,12 @@ const LoginForm = props => {
             <Input
               type="text"
               onChange={event => setUsername(event.target.value)}
+              style={{
+                borderColor: '#00203D',
+                '&:focus': {
+                  borderColor: '#0059A9',
+                },
+              }}
             />
           </FormControl>
           <FormControl id="password">
@@ -86,16 +90,15 @@ const LoginForm = props => {
             <Input
               type="password"
               onChange={event => setPassword(event.target.value)}
+              style={{
+                borderColor: '#00203D',
+                '&:focus': {
+                  borderColor: '#0059A9',
+                },
+              }}
             />
           </FormControl>
           <Stack spacing={10}>
-            <Stack
-              direction={{ base: 'column', sm: 'row' }}
-              align={'start'}
-              justify={'space-between'}
-            >
-              <Link to="?mode=signup">{props.captionBtn}</Link>
-            </Stack>
             <Button
               type="submit"
               bg={'blue.400'}

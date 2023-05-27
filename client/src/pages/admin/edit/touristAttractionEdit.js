@@ -97,7 +97,7 @@ const EditTouristAttraction = () => {
         >
           <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
             <Stack align={'center'}>
-              <Heading fontSize={'4xl'}>Tambah Tempat Wisata</Heading>
+              <Heading fontSize={'4xl'}>Ubah Tempat Wisata</Heading>
             </Stack>
             <Box
               rounded={'lg'}

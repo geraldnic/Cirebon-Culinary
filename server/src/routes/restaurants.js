@@ -52,6 +52,28 @@ router.get("/getrestaurant", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+
+});
+
+//GET RESTAURANT BASED ON SELECTED FOOD
+router.post("/getsomerestaurant", async (req, res) => {
+  try {
+    const restaurant = await RestaurantModel.find({ foodId: req.body.foodId});
+    res.json(restaurant);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//GET RESTAURANT BY ID
+router.post("/getrestaurantbyid", async (req, res) => {
+  try {
+    const restaurant = await RestaurantModel.find({ _id: req.body.id});
+    res.json(restaurant);
+  } catch (err) {
+    console.log(err);
+  }
+
 });
 
 //DELETE RESTAURANT

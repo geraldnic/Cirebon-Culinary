@@ -17,7 +17,7 @@ const CriteriaCard = ({ name, id, description, imageUrl, setCriteria }) => {
       <Card
         direction={{ base: 'column', sm: 'row' }}
         overflow="hidden"
-        variant="outline"
+        bg="#F4B41A" 
       >
         <Image
           objectFit="cover"
@@ -27,9 +27,9 @@ const CriteriaCard = ({ name, id, description, imageUrl, setCriteria }) => {
 
         <Stack>
           <CardBody>
-            <Heading size="md" align='left'>{name}</Heading>
+            <Heading size="md" align='left' color="#00203D">{name}</Heading>
 
-            <Text py="2" align='left'>{description}</Text>
+            <Text py="2" align='left' color="#00203D">{description}</Text>
           </CardBody>
 
           <CardFooter>

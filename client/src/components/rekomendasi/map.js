@@ -1,5 +1,5 @@
 import { Map, Marker } from 'google-maps-react';
-import { Text } from '@chakra-ui/react';
+import { Text, Box } from '@chakra-ui/react';
 import React from 'react';
 import axios from 'axios';
 
@@ -43,7 +43,7 @@ const MapComponent = props => {
 
   return (
     <div className="container">
-          <Text fontSize="2xl" fontWeight="bold" align="center" mt={7} mb={3}>
+          <Text fontSize="2xl" fontWeight="bold" align="center" mt={7} mb={3} color='white'>
             Silahkan Pilih Tempat Wisata yang Dikunjungi
           </Text>
           <Map
@@ -80,6 +80,7 @@ const MapComponent = props => {
               );
             })}
           </Map>
+        <Box bgColor="black" w="100%" h="calc(110vh)" position="absolute" zIndex="-1"></Box>
     </div>
   );
 };

@@ -14,15 +14,17 @@ import {
 const HistoryTable = props => {
   return (
     <TableContainer>
-      <Text align="center" mb={5} fontWeight="600">
+      <Text align="center" mb={5} fontWeight="600" color="#ADEFD1FF">
         History Input
       </Text>
       <Table colorScheme="black" border="1px solid black">
         <Thead>
           <Tr>
-            <Th bg="#919191" color="black">
-              Tempat Wisata
-            </Th>
+            {props.place && (
+              <Th bg="#919191" color="black">
+                Tempat Wisata
+              </Th>
+            )}
             <Th bg="#919191" color="black">
               Tipe Makanan
             </Th>
@@ -39,11 +41,27 @@ const HistoryTable = props => {
         </Thead>
         <Tbody>
           <Tr>
-            <Td>{props.place}</Td>
-            {props.type ? <Td>{props.type}</Td> : <Td>-</Td>}
-            {props.ingredient ? <Td>{props.ingredient}</Td> : <Td>-</Td>}
-            {props.broth ? <Td>{props.broth}</Td> : <Td>-</Td>}
-            {props.serving ? <Td>{props.serving}</Td> : <Td>-</Td>}
+            {props.place && <Td bg="white">{props.place}</Td>}
+            {props.type ? (
+              <Td bg="white">{props.type}</Td>
+            ) : (
+              <Td bg="white">-</Td>
+            )}
+            {props.ingredient ? (
+              <Td bg="white">{props.ingredient}</Td>
+            ) : (
+              <Td bg="white">-</Td>
+            )}
+            {props.broth ? (
+              <Td bg="white">{props.broth}</Td>
+            ) : (
+              <Td bg="white">-</Td>
+            )}
+            {props.serving ? (
+              <Td bg="white">{props.serving}</Td>
+            ) : (
+              <Td bg="white">-</Td>
+            )}
           </Tr>
         </Tbody>
       </Table>

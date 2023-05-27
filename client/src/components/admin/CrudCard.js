@@ -18,6 +18,7 @@ const CrudCard = ({ name, description, imageUrl, path, handleNavigate }) => {
         direction={{ base: 'column', sm: 'row' }}
         overflow="hidden"
         variant="outline"
+        bg="#F4B41A" 
       >
         <Image
           objectFit="cover"
@@ -27,9 +28,9 @@ const CrudCard = ({ name, description, imageUrl, path, handleNavigate }) => {
 
         <Stack>
           <CardBody>
-            <Heading size="md">{name}</Heading>
+            <Heading size="md" color="#00203D">{name}</Heading>
 
-            <Text py="2">{description}</Text>
+            <Text py="2" color="#00203D">{description}</Text>
           </CardBody>
 
           <CardFooter>

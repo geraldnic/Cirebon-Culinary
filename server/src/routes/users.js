@@ -34,7 +34,7 @@ router.post("/register", async (req, res) => {
     messageTitle: "Akun berhasil dibuat!",
     messageContent: "Sekarang kamu bisa masuk pakai akun barumu",
     closeCaption: "Login",
-    link: "/auth?mode=signin"
+    link: "/auth?mode=signin",
   });
 });
 
@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
       code: 403,
       messageContent: "Username yang kamu masukkin salah atau belum terdaftar",
       closeCaption: "Coba lagi",
-      link: "/auth?mode=signin"
+      link: "/auth?mode=signin",
     });
   }
 
@@ -60,12 +60,66 @@ router.post("/login", async (req, res) => {
       code: 403,
       messageContent: "Coba diingat-ingat lagi deh",
       closeCaption: "Coba lagi",
-      link: "/auth?mode=signin"
+      link: "/auth?mode=signin",
     });
   }
 
   const token = jwt.sign({ id: user._id }, "secret");
-  res.json({ token, userID: user._id, code: 200 });
+  res.json({ token, username: user.username, code: 200 });
+});
+
+router.put("/changepassword", async (req, res) => {
+  const { username, currPassword, newPassword } = req.body;
+  const user = await UserModel.findOne({ username });
+
+  if (!user) {
+    return res.json({
+      messageTitle: "User tidak terdaftar!",
+      code: 403,
+      messageContent: "Username yang kamu masukkin salah atau belum terdaftar",
+      closeCaption: "Coba lagi",
+      link: "/admin/userlist",
+    });
+  }
+
+  const isPasswordValid = await bcrypt.compare(currPassword, user.password);
+
+  if (!isPasswordValid) {
+    return res.json({
+      messageTitle: "Password Salah!",
+      code: 403,
+      messageContent: "Coba diingat-ingat lagi deh",
+      closeCaption: "Coba lagi",
+      link: "/admin/userlist",
+    });
+  }
+
+  if (currPassword == newPassword) {
+    return res.json({
+      messageTitle: "Password Tidak Boleh Sama!",
+      code: 403,
+      messageContent: "Silahkan masukkan password baru yang berbeda.",
+      closeCaption: "Coba lagi",
+      link: "/admin/userlist",
+    });
+  }
+
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+  await UserModel.findOneAndUpdate(
+    { username },
+    {
+      password: hashedNewPassword,
+    },
+    { new: true }
+  );
+  res.json({
+    code: 200,
+    messageTitle: "Sukses!",
+    messageContent: "Password Berhasil diubah!",
+    closeCaption: "Oke",
+    link: "/admin",
+  });
 });
 
 export { router as userRouter };

@@ -269,7 +269,7 @@ const EditFood = () => {
                     </Circle>
                   </Center>
                   <Heading fontSize={'4xl'} textAlign="center">
-                    Edit Menu Makanan
+                    Ubah Menu Makanan
                   </Heading>
                 </Stack>
                 <FormControl id="name" isRequired>

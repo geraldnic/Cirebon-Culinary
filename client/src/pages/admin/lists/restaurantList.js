@@ -25,6 +25,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Box,
 } from '@chakra-ui/react';
 
 import { Link } from 'react-router-dom';
@@ -58,12 +59,13 @@ const RestaurantList = () => {
 
   let tableNumber = 0;
   return (
-    <>
-      <Text fontSize="2xl" fontWeight="bold" align="center" mt={7} mb={10}>
+    <Box bg="black" pt={10}>
+    <Box m={5} p={10} bg="#00203D" borderRadius="10px">
+      <Text fontSize="2xl" fontWeight="bold" align="center" mb={10} color="#ADEFD1FF">
         Daftar Tempat Kuliner
       </Text>
-      <TableContainer maxH="400px" overflowY="scroll">
-        <Table variant="striped">
+      <TableContainer maxH="550px" overflowY="scroll">
+        <Table variant="striped" bg="white">
           <Thead
             style={{
               position: 'sticky',
@@ -155,7 +157,8 @@ const RestaurantList = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
+    </Box>
+    </Box>
   );
 };
 

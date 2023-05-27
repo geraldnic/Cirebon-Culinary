@@ -130,7 +130,7 @@ const EditRestaurant = () => {
                     </Circle>
                   </Center>
                   <Heading fontSize={'4xl'} textAlign="center">
-                    Tambah Tempat Kuliner
+                    Edit Tempat Kuliner
                   </Heading>
                 </Stack>
                 <FormControl id="name" isRequired>

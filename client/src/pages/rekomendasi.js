@@ -27,6 +27,7 @@ import {
 } from '@chakra-ui/react';
 import HistoryTable from '../components/rekomendasi/historyTable';
 import FindRestaurant from '../components/rekomendasi/findRestaurant';
+import { WarningTwoIcon } from '@chakra-ui/icons';
 
 const Rekomendasi = props => {
   const [marker, setMarker] = useState([]);
@@ -35,7 +36,8 @@ const Rekomendasi = props => {
   const [broth, setBroth] = useState([]);
   const [serving, setServing] = useState([]);
   const [food, setFood] = useState([]);
-  const [restaurant, setRestaurant] = useState([]);
+  const [restaurantResult, setRestaurantResult] = useState();
+  const [someRestaurant, setSomeRestaurant] = useState([]);
 
   const [selectedType, setSelectedType] = useState({
     id: '',
@@ -71,10 +73,6 @@ const Rekomendasi = props => {
 
     axios.get('http://localhost:3001/food/gettype').then(res => {
       setType(res?.data ?? []);
-    });
-
-    axios.get('http://localhost:3001/restaurant/getrestaurant').then(res => {
-      setRestaurant(res?.data ?? []);
     });
   }, []);
 
@@ -162,6 +160,26 @@ const Rekomendasi = props => {
     }
   }, [selectedServing]);
 
+  //FETCH SOME RESTAURANT
+  useEffect(() => {
+    if (selectedFood.id) {
+      const getSomeRestaurant = async () => {
+        try {
+          await axios
+            .post('http://localhost:3001/restaurant/getsomerestaurant', {
+              foodId: selectedFood.id,
+            })
+            .then(res => {
+              setSomeRestaurant(res?.data ?? []);
+            });
+        } catch (err) {
+          console.log('some restaurant err', err);
+        }
+      };
+      getSomeRestaurant();
+    }
+  }, [selectedFood]);
+
   const handleClick = (mapProps, map, clickEvent) => {
     const lat = clickEvent.latLng.lat();
     const lng = clickEvent.latLng.lng();
@@ -181,15 +199,26 @@ const Rekomendasi = props => {
     });
   };
 
-  const reset = () => {
+  const resetMenu = () => {
     setSelectedType({});
     setSelectedIngredient({});
     setSelectedBroth({});
     setSelectedServing({});
+    setSelectedFood({});
+  };
+
+  const reset = () => {
+    setSelectedPlace();
+    setSelectedType({});
+    setSelectedIngredient({});
+    setSelectedBroth({});
+    setSelectedServing({});
+    setSelectedFood({});
+    setRestaurantResult();
   };
 
   //AHP
-  const calcValue = (price, service, taste, distance) => {
+  const CalcValue = (price, service, taste, distance) => {
     let pts, stp, ptt, ttp, ptd, dtp, stt, tts, std, dts, ttd, dtt;
     let ptp = 1;
     let sts = 1;
@@ -267,6 +296,7 @@ const Rekomendasi = props => {
     let c2 = [stp, sts, stt, std];
     let c3 = [ttp, tts, ttt, ttd];
     let c4 = [dtp, dts, dtt, dtd];
+
     let total = [];
     for (let i = 0; i < 4; i++) {
       total[i] = c1[i] + c2[i] + c3[i] + c4[i];
@@ -312,10 +342,11 @@ const Rekomendasi = props => {
 
     let CR = 0;
     CR = CI / 0.9; //CR <= 0.1 === konsisten
+    console.log(eigen);
 
     // Implementasi TOPSIS
     // Matrix Keputusan
-    const decisionM = restaurant.map(item => {
+    const decisionM = someRestaurant.map(item => {
       const distance = getDistance(
         {
           latitude: selectedPlace.location.lat,
@@ -389,16 +420,19 @@ const Rekomendasi = props => {
     for (let i = 0; i < decisionM.length; i++) {
       x2 = x2 + Math.pow(decisionM[i][1], 2);
     }
+    x2 = Math.sqrt(x2);
 
     let x3 = 0;
     for (let i = 0; i < decisionM.length; i++) {
       x3 = x3 + Math.pow(decisionM[i][2], 2);
     }
+    x3 = Math.sqrt(x3);
 
     let x4 = 0;
     for (let i = 0; i < decisionM.length; i++) {
       x4 = x4 + Math.pow(decisionM[i][3], 2);
     }
+    x4 = Math.sqrt(x4);
 
     //Normalisasi Baris 1
     for (let i = 0; i < decisionM.length; i++) {
@@ -467,34 +501,48 @@ const Rekomendasi = props => {
     let minusTemp = 0;
     const d = decisionM.map(item => {
       for (let j = 0; j < 4; j++) {
-        plusTemp = plusTemp + Math.pow((item[j] + idealSolution[0][j]), 2);
+        plusTemp = plusTemp + Math.pow(item[j] + idealSolution[0][j], 2);
       }
       for (let j = 0; j < 4; j++) {
-        minusTemp = minusTemp + Math.pow((item[j] + idealSolution[1][j]), 2);
+        minusTemp = minusTemp + Math.pow(item[j] + idealSolution[1][j], 2);
       }
       minusTemp = Math.sqrt(minusTemp);
       dMinus = minusTemp;
+      minusTemp = 0;
 
       plusTemp = Math.sqrt(plusTemp);
       dPlus = plusTemp;
       plusTemp = 0;
 
-      console.log(item[0])
+      console.log(item[0]);
       return [dPlus, dMinus];
     });
 
     //Mencari Nilai Preferensi
     //Matrix Preferensi
-    let preferenceM = [];
-    for(let i = 0; i<decisionM.length; i++){
-      preferenceM[i] = d[i][1] / (d[i][1] + d[i][0])
+    let pref = [];
+    let finalCtr = -1;
+    for (let i = 0; i < decisionM.length; i++) {
+      pref[i] = d[i][1] / (d[i][1] + d[i][0]);
     }
 
-    console.log(preferenceM);
-    console.log(d);
-    console.log(idealSolution);
-    console.log(x1);
-    console.log(decisionM);
+    let preferenceM = [];
+    preferenceM = someRestaurant.map(item => {
+      finalCtr++;
+      return {
+        id: item._id,
+        name: item.name,
+        imageUrl: item.imageUrl,
+        price: item.price,
+        service: item.service,
+        taste: item.taste,
+        position: item.position,
+        score: pref[finalCtr],
+      };
+    });
+
+    let sortedPreferences = preferenceM.sort((a, b) => b.score - a.score);
+    setRestaurantResult(sortedPreferences);
   };
 
   const renderMapComponent = () => {
@@ -514,17 +562,28 @@ const Rekomendasi = props => {
   const renderTypeCard = () => {
     if (selectedPlace && !selectedType.id) {
       return (
-        <Box m={5}>
+        <Box mx={5}>
           <Button colorScheme="yellow" onClick={() => setSelectedPlace()}>
             <BiArrowBack /> Back
           </Button>
-          <Box maxW="1100px" align="center" mx="auto">
+          <Box
+            maxW="1100px"
+            align="center"
+            mx="auto"
+            bg="#00203D"
+            px={10}
+            pb={10}
+            pt={5}
+            borderRadius="10px"
+            mt={[5, null, null]}
+          >
             <Text
               fontSize="2xl"
               fontWeight="bold"
               align="center"
               mt={[5, null, null]}
               mb={10}
+              color="#ADEFD1FF"
             >
               Silahkan Pilih Tipe Makanan yang Diinginkan
             </Text>
@@ -561,19 +620,30 @@ const Rekomendasi = props => {
     if (selectedType.id && !selectedIngredient.id) {
       return (
         <>
-          <Box m={5}>
+          <Box mx={5}>
             <Button colorScheme="yellow" onClick={() => setSelectedType({})}>
               <BiArrowBack /> Back
             </Button>
-            <Box maxW="1100px" align="center" mx="auto">
+            <Box
+              maxW="1100px"
+              align="center"
+              mx="auto"
+              bg="#00203D"
+              px={10}
+              pb={10}
+              pt={5}
+              borderRadius="10px"
+              mt={[5, null, null]}
+            >
               <Text
                 fontSize="2xl"
                 fontWeight="bold"
                 align="center"
                 mt={[5, null, null]}
                 mb={10}
+                color="#ADEFD1FF"
               >
-                Silahkan Pilih Tipe Makanan yang Diinginkan
+                Silahkan Pilih Bahan Utama
               </Text>
               <SimpleGrid columns={[1, null, 2]} spacing={[5, null, 10]}>
                 {ingredient.map(item => (
@@ -609,20 +679,31 @@ const Rekomendasi = props => {
     if (selectedIngredient.id && !selectedBroth.id) {
       return (
         <>
-          <Box m={5} className="container">
+          <Box mx={5} className="container">
             <Button
               colorScheme="yellow"
               onClick={() => setSelectedIngredient({})}
             >
               <BiArrowBack /> Back
             </Button>
-            <Box maxW="1100px" align="center" mx="auto">
+            <Box
+              maxW="1100px"
+              align="center"
+              mx="auto"
+              bg="#00203D"
+              px={10}
+              pb={10}
+              pt={5}
+              borderRadius="10px"
+              mt={[5, null, null]}
+            >
               <Text
                 fontSize="2xl"
                 fontWeight="bold"
                 align="center"
                 mt={[5, null, null]}
                 mb={10}
+                color="#ADEFD1FF"
               >
                 Apakah Kamu Mau Makanan Kamu Berkuah / Tidak berkuah?
               </Text>
@@ -660,17 +741,28 @@ const Rekomendasi = props => {
     if (selectedIngredient.id && selectedBroth.id && !selectedServing.id) {
       return (
         <>
-          <Box m={5} className="container">
+          <Box mx={5} className="container">
             <Button colorScheme="yellow" onClick={() => setSelectedBroth({})}>
               <BiArrowBack /> Back
             </Button>
-            <Box maxW="1100px" align="center" mx="auto">
+            <Box
+              maxW="1100px"
+              align="center"
+              mx="auto"
+              bg="#00203D"
+              px={10}
+              pb={10}
+              pt={5}
+              borderRadius="10px"
+              mt={[5, null, null]}
+            >
               <Text
                 fontSize="2xl"
                 fontWeight="bold"
                 align="center"
                 mt={[5, null, null]}
                 mb={10}
+                color="#ADEFD1FF"
               >
                 Silahkan Pilih Penyajian yang Diinginkan
               </Text>
@@ -707,21 +799,31 @@ const Rekomendasi = props => {
   const renderFoodCard = () => {
     if (selectedServing.id && food && !selectedFood.id) {
       return (
-        <Box m={5} className="container">
+        <Box mx={5} className="container">
           <Button colorScheme="yellow" onClick={() => setSelectedServing({})}>
             <BiArrowBack /> Back
           </Button>
-          <Box maxW="1100px" align="center" mx="auto">
+          <Box
+            maxW="1100px"
+            align="center"
+            mx="auto"
+            px={10}
+            pb={10}
+            pt={5}
+            borderRadius="10px"
+            mt={[5, null, null]}
+          >
             <Center>
               <Flex>
                 <Box className="container">
                   {food.map(item => (
-                    <Card maxW="sm" align="center" mx="auto">
+                    <Card maxW="sm" align="center" mx="auto" bg="#00203D">
                       <Text
                         fontSize="2xl"
                         fontWeight="bold"
                         align="center"
                         mt={5}
+                        color="#FF3521"
                       >
                         Makanan Sesuai Kriteriamu
                       </Text>
@@ -729,11 +831,11 @@ const Rekomendasi = props => {
                         <Image src={item.imageUrl} borderRadius="lg" />
                         <Stack mt="6" spacing="3">
                           <Text
-                            color={'green.500'}
                             textTransform={'uppercase'}
                             fontWeight={800}
                             fontSize={'sm'}
                             letterSpacing={1.1}
+                            color={'green.500'}
                           >
                             {selectedType.name +
                               ' - ' +
@@ -745,8 +847,10 @@ const Rekomendasi = props => {
                           </Text>
                         </Stack>
                         <Stack mt="6" spacing="3">
-                          <Heading size="md">{item.name}</Heading>
-                          <Text>{item.description}</Text>
+                          <Heading size="md" color="#FF3521">
+                            {item.name}
+                          </Heading>
+                          <Text color="#E7A238">{item.description}</Text>
                         </Stack>
                       </CardBody>
                       <Divider />
@@ -764,7 +868,7 @@ const Rekomendasi = props => {
                           <Button
                             variant="ghost"
                             colorScheme="blue"
-                            onClick={reset}
+                            onClick={resetMenu}
                           >
                             Cari menu lain
                           </Button>
@@ -789,18 +893,205 @@ const Rekomendasi = props => {
       );
     }
   };
+
+  console.log(selectedFood.id, restaurantResult, someRestaurant.length);
+
   const renderRestaurant = () => {
-    if (selectedFood.id && !selectedCriteria.id) {
+    if (selectedFood.id && !restaurantResult) {
+      if (someRestaurant.length == 0) {
+        return (
+          <Box textAlign="center" py={10} px={6} bg="white">
+            <WarningTwoIcon boxSize={'50px'} color={'orange.300'} />
+            <Heading as="h2" size="xl" mt={6} mb={2}>
+              Tempat Kuliner Tidak Ditemukan
+            </Heading>
+            <Text color={'gray.500'}>
+              Mohon maaf, tempat kuliner tidak tersedia untuk menu makanan yang
+              kamu pilih. Silahkan coba cari rekomendasi lainnya.
+            </Text>
+            <Button variant="ghost" colorScheme="blue" onClick={resetMenu} mt={5}>
+              Pilih Menu Lain
+            </Button>
+          </Box>
+        );
+      } else {
+        return (
+          <Box mx={5}>
+            <Button
+              mb={[5, null, null]}
+              colorScheme="yellow"
+              onClick={() => setSelectedFood({})}
+            >
+              <BiArrowBack /> Back
+            </Button>
+            <FindRestaurant calcValue={CalcValue} />
+          </Box>
+        );
+      }
+    }
+  };
+
+  const renderResult = () => {
+    if (restaurantResult) {
       return (
         <>
-          <FindRestaurant calcValue={calcValue} />
+          <Box mx={5}>
+            <Button colorScheme="yellow" onClick={() => setRestaurantResult()}>
+              <BiArrowBack /> Back
+            </Button>
+            <Box
+              maxW="1100px"
+              align="center"
+              mx="auto"
+              bg="#00203D"
+              px={10}
+              pb={10}
+              pt={5}
+              borderRadius="10px"
+              mt={[5, null, null]}
+            >
+              <Text
+                fontSize="2xl"
+                fontWeight="bold"
+                align="center"
+                mt={[5, null, null]}
+                mb={10}
+                color="#ADEFD1FF"
+              >
+                Rekomendasi Restoran Berdasarkan Preferensimu
+              </Text>
+              <SimpleGrid columns={[1, null, 1]} spacing={[5, null, 10]}>
+                {restaurantResult.length >= 5
+                  ? restaurantResult.slice(0, 5).map(item => {
+                      const distance = getDistance(
+                        {
+                          latitude: selectedPlace.location.lat,
+                          longitude: selectedPlace.location.lng,
+                        },
+                        {
+                          latitude: item.position.lat,
+                          longitude: item.position.lng,
+                        }
+                      );
+                      return (
+                        <Card
+                          direction={{ base: 'column', sm: 'row' }}
+                          overflow="hidden"
+                          variant="outline"
+                          bg="#F4B41A"
+                        >
+                          <Image
+                            objectFit="cover"
+                            maxW={{ base: '100%', sm: '300px' }}
+                            src={item.imageUrl}
+                          />
+
+                          <Stack>
+                            <CardBody>
+                              <Heading size="md" align="left">
+                                {item.name}
+                              </Heading>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Harga : {item.price}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Pelayanan : {item.service}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Rasa : {item.taste}
+                              </Text>
+                              <Text
+                                py="2"
+                                align="left"
+                                fontWeight="bold"
+                                color="#00203D"
+                              >
+                                Skor :{' '}
+                                {Math.round(item.score * 1000000) / 1000000}
+                              </Text>
+                            </CardBody>
+                          </Stack>
+                        </Card>
+                      );
+                    })
+                  : restaurantResult.map(item => {
+                      const distance = getDistance(
+                        {
+                          latitude: selectedPlace.location.lat,
+                          longitude: selectedPlace.location.lng,
+                        },
+                        {
+                          latitude: item.position.lat,
+                          longitude: item.position.lng,
+                        }
+                      );
+                      return (
+                        <Card
+                          direction={{ base: 'column', sm: 'row' }}
+                          overflow="hidden"
+                          variant="outline"
+                          bg="#F4B41A"
+                        >
+                          <Image
+                            objectFit="cover"
+                            maxW={{ base: '100%', sm: '300px' }}
+                            src={item.imageUrl}
+                          />
+
+                          <Stack>
+                            <CardBody>
+                              <Heading size="md" align="left" color="#00203D">
+                                {item.name}
+                              </Heading>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Harga : {item.price}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Pelayanan : {item.service}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Rasa : {item.taste}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Jarak : {distance / 1000 + ' km'}
+                              </Text>
+                              <Text
+                                py="2"
+                                align="left"
+                                fontWeight="bold"
+                                color="#00203D"
+                              >
+                                Skor :{' '}
+                                {Math.round(item.score * 1000000) / 1000000}
+                              </Text>
+                            </CardBody>
+                          </Stack>
+                        </Card>
+                      );
+                    })}
+              </SimpleGrid>
+              <Button
+                colorScheme="blue"
+                align="center"
+                mx="auto"
+                mt={5}
+                maxW="400px"
+                w="100%"
+                onClick={reset}
+              >
+                Cari Rekomendasi Lain
+              </Button>
+            </Box>
+          </Box>
+          <Box w="100%" bg="black" height="40px" />
         </>
       );
     }
     return null;
   };
+
   return (
-    <div className="container">
+    <Box bg="black" pt={10}>
       {renderMapComponent()}
       {renderTypeCard()}
       {renderIngredientCard()}
@@ -808,7 +1099,8 @@ const Rekomendasi = props => {
       {renderServingCard()}
       {renderFoodCard()}
       {renderRestaurant()}
-    </div>
+      {renderResult()}
+    </Box>
   );
 };
 

@@ -17,6 +17,9 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
+
+import { Link as ReactLink } from 'react-router-dom';
+
 import {
   HamburgerIcon,
   CloseIcon,
@@ -26,24 +29,61 @@ import {
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
-  const [cookies, setCookies] = useCookies(['access_token']);
+  const [cookies, setCookies, removeCookies] = useCookies(['access_token']);
 
   const logout = () => {
-    setCookies("access_token", "");
-    window.localStorage.removeItem("userID");
-  }
+    removeCookies('access_token');
+    window.localStorage.removeItem('username');
+  };
+
+  const loggedOutNavItems = [
+    {
+      label: 'Cari Rekomendasi',
+      href: '/rekomendasi',
+    },
+    {
+      label: 'Makanan Khas',
+      href: '/findfood',
+    },
+    {
+      label: 'Tempat Kuliner',
+      href: '/findrestaurant',
+    },
+    {
+      label: 'About',
+      href: '#',
+    },
+  ];
+
+  const loggedInNavItems = [
+    {
+      label: 'Menu Makanan',
+      href: '/admin/foodlist',
+    },
+    {
+      label: 'Tempat Kuliner',
+      href: '/admin/restaurantlist',
+    },
+    {
+      label: 'Tempat Wisata',
+      href: '/admin/touristattractionlist',
+    },
+    {
+      label: 'Admin',
+      href: '/admin/userlist',
+    },
+  ];
+
+  const navItems = cookies.access_token ? loggedInNavItems : loggedOutNavItems;
 
   return (
-    <Box>
+    <Box bg="#212529">
       <Flex
-        bg={useColorModeValue('white', 'gray.800')}
-        color={useColorModeValue('gray.600', 'white')}
         minH={'60px'}
+        color="#9B9294"
         py={{ base: 2 }}
         px={{ base: 4 }}
         borderBottom={1}
-        borderStyle={'solid'}
-        borderColor={useColorModeValue('gray.200', 'gray.900')}
         align={'center'}
       >
         <Flex
@@ -61,22 +101,41 @@ export default function WithSubnavigation() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Link
-            href="/"
-            _hover={{
-              textDecoration: 'none',
-            }}
-          >
-            <Text
-              fontFamily={'heading'}
-              color={useColorModeValue('gray.800', 'white')}
-              fontWeight={'bold'}
+          {!cookies.access_token ? (
+            <Link
+              _hover={{
+                textDecoration: 'none',
+              }}
             >
-              Rekomendasi Kuliner Cirebon
-            </Text>
-          </Link>
+              <ReactLink to="/">
+                <Text
+                  fontFamily={'heading'}
+                  fontWeight={'bold'}
+                  color="#FF001F"
+                >
+                  Rekomendasi Kuliner Cirebon
+                </Text>
+              </ReactLink>
+            </Link>
+          ) : (
+            <Link
+              _hover={{
+                textDecoration: 'none',
+              }}
+            >
+              <ReactLink to="/admin">
+                <Text
+                  fontFamily={'heading'}
+                  fontWeight={'bold'}
+                  color="#FF001F"
+                >
+                  Rekomendasi Kuliner Cirebon
+                </Text>
+              </ReactLink>
+            </Link>
+          )}
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
+            <DesktopNav navItems={navItems} />
           </Flex>
         </Flex>
 
@@ -88,91 +147,86 @@ export default function WithSubnavigation() {
         >
           {!cookies.access_token ? (
             <>
-            {/* <Button
-            as={'a'}
-            fontSize={'sm'}
-            fontWeight={400}
-            variant={'link'}
-            href={'/auth?mode=signin'}
-          >
-            Sign In
-          </Button> */}
-          <Button
-            as={'a'}
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize={'sm'}
-            fontWeight={600}
-            color={'white'}
-            bg={'pink.400'}
-            href={'/auth?mode=signin'}
-            _hover={{
-              bg: 'pink.300',
-            }}
-          >
-            Admin
-          </Button>
-          </>
+              <ReactLink to={'/auth?mode=signin'}>
+                <Button
+                  as={'a'}
+                  display={{ base: 'none', md: 'inline-flex' }}
+                  fontSize={'sm'}
+                  fontWeight={600}
+                  color={'white'}
+                  bg={'pink.400'}
+                  _hover={{
+                    bg: 'pink.300',
+                  }}
+                >
+                  Admin
+                </Button>
+              </ReactLink>
+            </>
           ) : (
-            <Link href={'/auth?mode=signin'}>
-            <Button onClick={logout}>Logout</Button>
+            <Link>
+              <ReactLink to={'/'}>
+                <Button onClick={logout}>Logout</Button>
+              </ReactLink>
             </Link>
           )}
-          
         </Stack>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav navItems={navItems} />
       </Collapse>
     </Box>
   );
 }
 
-const DesktopNav = () => {
-  const linkColor = useColorModeValue('gray.600', 'gray.200');
-  const linkHoverColor = useColorModeValue('gray.800', 'white');
+const DesktopNav = ({ navItems }) => {
+  const linkColor = '#9B9294';
+  const linkHoverColor = '#BEB2B5';
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
   return (
     <Stack direction={'row'} spacing={4}>
-      {NAV_ITEMS.map(navItem => (
-        <Box key={navItem.label}>
-          <Popover trigger={'hover'} placement={'bottom-start'}>
-            <PopoverTrigger>
-              <Link
-                p={2}
-                href={navItem.href ?? '#'}
-                fontSize={'sm'}
-                fontWeight={500}
-                color={linkColor}
-                _hover={{
-                  textDecoration: 'none',
-                  color: linkHoverColor,
-                }}
-              >
-                {navItem.label}
-              </Link>
-            </PopoverTrigger>
+      {navItems &&
+        navItems.map(navItem => (
+          <Box key={navItem.label}>
+            <Popover trigger={'hover'} placement={'bottom-start'}>
+              <PopoverTrigger>
+                <Link
+                  p={2}
+                  fontSize={'sm'}
+                  fontWeight={500}
+                  color={linkColor}
+                  _hover={{
+                    textDecoration: 'none',
+                    color: linkHoverColor,
+                  }}
+                >
+                  <ReactLink to={navItem.href ?? '#'}>
+                    {navItem.label}
+                  </ReactLink>
+                </Link>
+              </PopoverTrigger>
 
-            {navItem.children && (
-              <PopoverContent
-                border={0}
-                boxShadow={'xl'}
-                bg={popoverContentBgColor}
-                p={4}
-                rounded={'xl'}
-                minW={'sm'}
-              >
-                <Stack>
-                  {navItem.children.map(child => (
-                    <DesktopSubNav key={child.label} {...child} />
-                  ))}
-                </Stack>
-              </PopoverContent>
-            )}
-          </Popover>
-        </Box>
-      ))}
+              {navItem.children && (
+                <PopoverContent
+                  border={0}
+                  boxShadow={'xl'}
+                  bg={popoverContentBgColor}
+                  p={4}
+                  rounded={'xl'}
+                  minW={'sm'}
+                >
+                  <Stack>
+                    {navItem.children.map(child => (
+                      <DesktopSubNav key={child.label} {...child} />
+                    ))}
+                  </Stack>
+                </PopoverContent>
+              )}
+            </Popover>
+          </Box>
+        ))}
     </Stack>
   );
 };
@@ -180,50 +234,52 @@ const DesktopNav = () => {
 const DesktopSubNav = ({ label, href, subLabel }) => {
   return (
     <Link
-      href={href}
       role={'group'}
       display={'block'}
       p={2}
       rounded={'md'}
       _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}
     >
-      <Stack direction={'row'} align={'center'}>
-        <Box>
-          <Text
+      <ReactLink to={href}>
+        <Stack direction={'row'} align={'center'}>
+          <Box>
+            <Text
+              transition={'all .3s ease'}
+              _groupHover={{ color: 'pink.400' }}
+              fontWeight={500}
+            >
+              {label}
+            </Text>
+            <Text fontSize={'sm'}>{subLabel}</Text>
+          </Box>
+          <Flex
             transition={'all .3s ease'}
-            _groupHover={{ color: 'pink.400' }}
-            fontWeight={500}
+            transform={'translateX(-10px)'}
+            opacity={0}
+            _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
+            justify={'flex-end'}
+            align={'center'}
+            flex={1}
           >
-            {label}
-          </Text>
-          <Text fontSize={'sm'}>{subLabel}</Text>
-        </Box>
-        <Flex
-          transition={'all .3s ease'}
-          transform={'translateX(-10px)'}
-          opacity={0}
-          _groupHover={{ opacity: '100%', transform: 'translateX(0)' }}
-          justify={'flex-end'}
-          align={'center'}
-          flex={1}
-        >
-          <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon} />
-        </Flex>
-      </Stack>
+            <Icon color={'pink.400'} w={5} h={5} as={ChevronRightIcon} />
+          </Flex>
+        </Stack>
+      </ReactLink>
     </Link>
   );
 };
 
-const MobileNav = () => {
+const MobileNav = ({ navItems }) => {
   return (
     <Stack
       bg={useColorModeValue('white', 'gray.800')}
       p={4}
       display={{ md: 'none' }}
     >
-      {NAV_ITEMS.map(navItem => (
-        <MobileNavItem key={navItem.label} {...navItem} />
-      ))}
+      {navItems &&
+        navItems.map(navItem => (
+          <MobileNavItem key={navItem.label} {...navItem} />
+        ))}
     </Stack>
   );
 };
@@ -235,8 +291,8 @@ const MobileNavItem = ({ label, children, href }) => {
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
         py={2}
-        as={Link}
-        href={href ?? '#'}
+        as={ReactLink}
+        to={href ?? '#'}
         justify={'space-between'}
         align={'center'}
         _hover={{
@@ -271,8 +327,8 @@ const MobileNavItem = ({ label, children, href }) => {
         >
           {children &&
             children.map(child => (
-              <Link key={child.label} py={2} href={child.href}>
-                {child.label}
+              <Link key={child.label} py={2}>
+                <ReactLink to={child.href}>{child.label}</ReactLink>
               </Link>
             ))}
         </Stack>
@@ -280,33 +336,3 @@ const MobileNavItem = ({ label, children, href }) => {
     </Stack>
   );
 };
-
-const NAV_ITEMS = [
-  {
-    label: 'Cari Rekomendasi',
-    href: '/rekomendasi',
-  },
-  {
-    label: 'Makanan Khas',
-    children: [
-      {
-        label: 'Job Board',
-        subLabel: 'Find your dream design job',
-        href: '#',
-      },
-      {
-        label: 'Freelance Projects',
-        subLabel: 'An exclusive list for contract work',
-        href: '#',
-      },
-    ],
-  },
-  {
-    label: 'Tempat Kuliner',
-    href: '#',
-  },
-  {
-    label: 'About',
-    href: '#',
-  },
-];
