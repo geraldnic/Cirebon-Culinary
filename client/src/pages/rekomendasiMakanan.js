@@ -52,7 +52,7 @@ const RekomendasiMakanan = () => {
 
   //FETCH FOOD TYPE
   useEffect(() => {
-    axios.get('http://localhost:3001/food/gettype').then(res => {
+    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
   }, []);
@@ -63,7 +63,7 @@ const RekomendasiMakanan = () => {
       const getIngredient = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getingredient', {
+            .post(process.env.SERVERURL + '/food/getingredient', {
               typeId: selectedType.id,
             })
             .then(res => {
@@ -83,7 +83,7 @@ const RekomendasiMakanan = () => {
       const getBroth = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getbroth', {
+            .post(process.env.SERVERURL + '/food/getbroth', {
               ingredientId: selectedIngredient.id,
             })
             .then(res => {
@@ -103,7 +103,7 @@ const RekomendasiMakanan = () => {
       const getServing = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getserving', {
+            .post(process.env.SERVERURL + '/food/getserving', {
               ingredientId: selectedIngredient.id,
               brothId: selectedBroth.id,
             })
@@ -124,7 +124,7 @@ const RekomendasiMakanan = () => {
       const getFood = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getfoodresult', {
+            .post(process.env.SERVERURL + '/food/getfoodresult', {
               typeId: selectedType.id,
               ingredientId: selectedIngredient.id,
               brothId: selectedBroth.id,

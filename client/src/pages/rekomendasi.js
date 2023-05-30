@@ -67,11 +67,11 @@ const Rekomendasi = props => {
 
   //FETCH MARKER AND FOOD TYPE
   useEffect(() => {
-    axios.get('http://localhost:3001/marker/getmarker').then(res => {
+    axios.get(process.env.SERVERURL + '/marker/getmarker').then(res => {
       setMarker(res?.data ?? []);
     });
 
-    axios.get('http://localhost:3001/food/gettype').then(res => {
+    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
   }, []);
@@ -82,7 +82,7 @@ const Rekomendasi = props => {
       const getIngredient = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getingredient', {
+            .post(process.env.SERVERURL + '/food/getingredient', {
               typeId: selectedType.id,
             })
             .then(res => {
@@ -102,7 +102,7 @@ const Rekomendasi = props => {
       const getBroth = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getbroth', {
+            .post(process.env.SERVERURL + '/food/getbroth', {
               ingredientId: selectedIngredient.id,
             })
             .then(res => {
@@ -122,7 +122,7 @@ const Rekomendasi = props => {
       const getServing = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getserving', {
+            .post(process.env.SERVERURL + '/food/getserving', {
               ingredientId: selectedIngredient.id,
               brothId: selectedBroth.id,
             })
@@ -143,7 +143,7 @@ const Rekomendasi = props => {
       const getFood = async () => {
         try {
           await axios
-            .post('http://localhost:3001/food/getfoodresult', {
+            .post(process.env.SERVERURL + '/food/getfoodresult', {
               typeId: selectedType.id,
               ingredientId: selectedIngredient.id,
               brothId: selectedBroth.id,
@@ -166,7 +166,7 @@ const Rekomendasi = props => {
       const getSomeRestaurant = async () => {
         try {
           await axios
-            .post('http://localhost:3001/restaurant/getsomerestaurant', {
+            .post(process.env.SERVERURL + '/restaurant/getsomerestaurant', {
               foodId: selectedFood.id,
             })
             .then(res => {
@@ -1034,9 +1034,9 @@ const Rekomendasi = props => {
                       }
                     })
                   : restaurantResult.map(item => {
-                    if(restaurantResult.length == 1){
-                      item.score = 1;
-                    }
+                      if (restaurantResult.length == 1) {
+                        item.score = 1;
+                      }
                       if (item.score !== 0) {
                         const distance = getDistance(
                           {
@@ -1129,5 +1129,5 @@ const Rekomendasi = props => {
 };
 
 export default GoogleApiWrapper({
-  apiKey: 'AIzaSyDoQbL_paQvMmzGLuKhOLjqiOgaaXeOxDw',
+  apiKey: process.env.MAPAPIKEY,
 })(Rekomendasi);

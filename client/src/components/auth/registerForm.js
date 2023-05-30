@@ -45,12 +45,15 @@ const RegisterForm = props => {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:3001/auth/register', {
-        username,
-        password,
-        firstName,
-        lastName,
-      });
+      const response = await axios.post(
+        process.env.SERVERURL + '/auth/register',
+        {
+          username,
+          password,
+          firstName,
+          lastName,
+        }
+      );
 
       openModal();
       const res = {
@@ -60,7 +63,6 @@ const RegisterForm = props => {
         link: response.data.link,
       };
       setModalProps(res);
-
     } catch (err) {
       console.error(err);
     }

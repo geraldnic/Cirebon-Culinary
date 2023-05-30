@@ -19,14 +19,14 @@ import {
   ModalBody,
   ModalFooter,
   Center,
-  Circle
+  Circle,
 } from '@chakra-ui/react';
 
 import axios from 'axios';
 
 import AuthModal from '../../../components/auth/modal';
 
-import { GiHotMeal } from 'react-icons/gi'
+import { GiHotMeal } from 'react-icons/gi';
 
 const AddFood = () => {
   // Temp State
@@ -74,16 +74,16 @@ const AddFood = () => {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:3001/food/gettype').then(res => {
+    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
-    axios.get('http://localhost:3001/food/getallingredient').then(res => {
+    axios.get(process.env.SERVERURL + '/food/getallingredient').then(res => {
       setIngredient(res?.data ?? []);
     });
-    axios.get('http://localhost:3001/food/getallbroth').then(res => {
+    axios.get(process.env.SERVERURL + '/food/getallbroth').then(res => {
       setBroth(res?.data ?? []);
     });
-    axios.get('http://localhost:3001/food/getallserving').then(res => {
+    axios.get(process.env.SERVERURL + '/food/getallserving').then(res => {
       setServing(res?.data ?? []);
     });
   }, [addedSomething]);
@@ -100,7 +100,7 @@ const AddFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:3001/food/addingredient',
+        process.env.SERVERURL + '/food/addingredient',
         {
           name: addName,
           description: addDescription,
@@ -137,7 +137,7 @@ const AddFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:3001/food/addserving',
+        process.env.SERVERURL + '/food/addserving',
         {
           name: addName,
           description: addDescription,
@@ -176,15 +176,18 @@ const AddFood = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:3001/food/addfood', {
-        name,
-        description,
-        imageUrl,
-        typeId,
-        ingredientId,
-        brothId,
-        servingId,
-      });
+      const response = await axios.post(
+        process.env.SERVERURL + '/food/addfood',
+        {
+          name,
+          description,
+          imageUrl,
+          typeId,
+          ingredientId,
+          brothId,
+          servingId,
+        }
+      );
 
       openModal();
       const res = {

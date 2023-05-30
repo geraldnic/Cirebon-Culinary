@@ -37,7 +37,7 @@ const LoginForm = props => {
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/auth/login', {
+      const response = await axios.post(process.env.SERVERURL + '/auth/login', {
         username,
         password,
       });
@@ -69,7 +69,7 @@ const LoginForm = props => {
               <FaLock />
             </Circle>
           </Center>
-          <Heading fontSize={'4xl'} pb={3} align='center'>
+          <Heading fontSize={'4xl'} pb={3} align="center">
             {props.formCaption}
           </Heading>
           <FormControl id="username">

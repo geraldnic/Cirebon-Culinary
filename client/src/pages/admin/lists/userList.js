@@ -29,7 +29,7 @@ const UserList = () => {
   useEffect(() => {
     const item = localStorage.getItem('username');
     if (item) {
-        setUsername(item);
+      setUsername(item);
     }
   }, []);
 
@@ -44,11 +44,14 @@ const UserList = () => {
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const response = await axios.put('http://localhost:3001/auth/changepassword', {
-        username,
-        currPassword,
-        newPassword
-      });
+      const response = await axios.put(
+        process.env.SERVERURL + '/auth/changepassword',
+        {
+          username,
+          currPassword,
+          newPassword,
+        }
+      );
 
       if (response.data.code === 200) {
         navigate('/admin');
@@ -69,7 +72,14 @@ const UserList = () => {
   return (
     <Flex minH={'90vh'} align={'center'} justify={'center'} bg="black">
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'lg'} bg="#ADEFD1FF" boxShadow={'lg'} p={8} maxW='450px' w="90vw">
+        <Box
+          rounded={'lg'}
+          bg="#ADEFD1FF"
+          boxShadow={'lg'}
+          p={8}
+          maxW="450px"
+          w="90vw"
+        >
           <form onSubmit={onSubmit}>
             <Stack spacing={4} color="#00203D" borderColor="#00203D">
               <Center>
@@ -77,7 +87,7 @@ const UserList = () => {
                   <FaLock />
                 </Circle>
               </Center>
-              <Heading fontSize={'4xl'} pb={5} align='center'>
+              <Heading fontSize={'4xl'} pb={5} align="center">
                 Manage Admin
               </Heading>
               <FormControl id="username">
@@ -91,7 +101,8 @@ const UserList = () => {
                       borderColor: '#0059A9',
                     },
                   }}
-                  defaultValue={username} disabled
+                  defaultValue={username}
+                  disabled
                 />
               </FormControl>
               <FormControl id="currentpassword">

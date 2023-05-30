@@ -51,7 +51,7 @@ const EditRestaurant = () => {
   useEffect(() => {
     const fetchSpecificRestaurant = async () => {
       await axios
-        .post('http://localhost:3001/restaurant/getspecificrestaurant', {
+        .post(process.env.SERVERURL + '/restaurant/getspecificrestaurant', {
           id,
         })
         .then(res => {
@@ -78,7 +78,7 @@ const EditRestaurant = () => {
     event.preventDefault();
     try {
       const response = await axios.put(
-        'http://localhost:3001/restaurant/editrestaurant',
+        process.env.SERVERURL + '/restaurant/editrestaurant',
         {
           id,
           name,
@@ -108,7 +108,7 @@ const EditRestaurant = () => {
   };
   return (
     <>
-    <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit}>
         <Flex
           minH={'100vh'}
           align={'center'}

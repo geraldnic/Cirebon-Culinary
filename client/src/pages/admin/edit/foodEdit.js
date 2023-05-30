@@ -19,7 +19,7 @@ import {
   ModalBody,
   ModalFooter,
   Center,
-  Circle
+  Circle,
 } from '@chakra-ui/react';
 
 import axios from 'axios';
@@ -80,7 +80,7 @@ const EditFood = () => {
   // FETCH CURRENT FOOD
   useEffect(() => {
     axios
-      .post('http://localhost:3001/food/getcurrfood', {
+      .post(process.env.SERVERURL + '/food/getcurrfood', {
         id,
       })
       .then(res => {
@@ -102,16 +102,16 @@ const EditFood = () => {
 
   // RE-FETCH DATA
   useEffect(() => {
-    axios.get('http://localhost:3001/food/gettype').then(res => {
+    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
-    axios.get('http://localhost:3001/food/getallingredient').then(res => {
+    axios.get(process.env.SERVERURL + '/food/getallingredient').then(res => {
       setIngredient(res?.data ?? []);
     });
-    axios.get('http://localhost:3001/food/getallbroth').then(res => {
+    axios.get(process.env.SERVERURL + '/food/getallbroth').then(res => {
       setBroth(res?.data ?? []);
     });
-    axios.get('http://localhost:3001/food/getallserving').then(res => {
+    axios.get(process.env.SERVERURL + '/food/getallserving').then(res => {
       setServing(res?.data ?? []);
     });
   }, [addedSomething]);
@@ -146,7 +146,7 @@ const EditFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:3001/food/addingredient',
+        process.env.SERVERURL + '/food/addingredient',
         {
           name: addName,
           description: addDescription,
@@ -183,7 +183,7 @@ const EditFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:3001/food/addserving',
+        process.env.SERVERURL + '/food/addserving',
         {
           name: addName,
           description: addDescription,
@@ -222,16 +222,19 @@ const EditFood = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.put('http://localhost:3001/food/editfood', {
-        id,
-        name,
-        description,
-        imageUrl,
-        typeId,
-        ingredientId,
-        brothId,
-        servingId,
-      });
+      const response = await axios.put(
+        process.env.SERVERURL + '/food/editfood',
+        {
+          id,
+          name,
+          description,
+          imageUrl,
+          typeId,
+          ingredientId,
+          brothId,
+          servingId,
+        }
+      );
 
       openModal();
       const res = {
@@ -248,7 +251,7 @@ const EditFood = () => {
   return (
     <>
       <form onSubmit={onSubmit}>
-      <Flex
+        <Flex
           minH={'100vh'}
           align={'center'}
           justify={'center'}
@@ -386,16 +389,17 @@ const EditFood = () => {
                       </option>
                     )}
                     {serving &&
-                      serving.map(item => (item._id === servingId ? (
-                        <option key={item._id} value={item._id} selected>
-                          {item.name}
-                        </option>
+                      serving.map(item =>
+                        item._id === servingId ? (
+                          <option key={item._id} value={item._id} selected>
+                            {item.name}
+                          </option>
                         ) : (
-                            <option key={item._id} value={item._id}>
-                          {item.name}
-                        </option>
+                          <option key={item._id} value={item._id}>
+                            {item.name}
+                          </option>
                         )
-                      ))}
+                      )}
                     <option key="addserving" value="addserving">
                       + Tambahkan Penyajian...
                     </option>

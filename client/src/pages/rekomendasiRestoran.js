@@ -27,11 +27,11 @@ const RekomendasiRestoran = props => {
   const [restaurantResult, setRestaurantResult] = useState();
 
   useEffect(() => {
-    axios.get('http://localhost:3001/marker/getmarker').then(res => {
+    axios.get(process.env.SERVERURL + '/marker/getmarker').then(res => {
       setMarker(res?.data ?? []);
     });
 
-    axios.get('http://localhost:3001/restaurant/getrestaurant').then(res => {
+    axios.get(process.env.SERVERURL + '/restaurant/getrestaurant').then(res => {
       setRestaurant(res?.data ?? []);
     });
   }, []);
@@ -457,56 +457,8 @@ const RekomendasiRestoran = props => {
                 Rekomendasi Restoran Berdasarkan Preferensimu
               </Text>
               <SimpleGrid columns={[1, null, 1]} spacing={[5, null, 10]}>
-                {restaurantResult.length >= 5 
+                {restaurantResult.length >= 5
                   ? restaurantResult.slice(0, 5).map(item => {
-                    const distance = getDistance(
-                      {
-                        latitude: selectedPlace.location.lat,
-                        longitude: selectedPlace.location.lng,
-                      },
-                      {
-                        latitude: item.position.lat,
-                        longitude: item.position.lng,
-                      }
-                    );
-                    return (
-                      <Card
-                        direction={{ base: 'column', sm: 'row' }}
-                        overflow="hidden"
-                        variant="outline"
-                        bg="#F4B41A" 
-                      >
-                        <Image
-                          objectFit="cover"
-                          maxW={{ base: '100%', sm: '300px' }}
-                          src={item.imageUrl}
-                        />
-
-                        <Stack>
-                          <CardBody>
-                            <Heading size="md" align="left" color="#00203D">
-                              {item.name}
-                            </Heading>
-                            <Text py="2" align="left" color="#00203D">
-                              Rating Harga : {item.price}
-                            </Text>
-                            <Text py="2" align="left" color="#00203D">
-                              Rating Pelayanan : {item.service}
-                            </Text>
-                            <Text py="2" align="left" color="#00203D">
-                              Rating Rasa : {item.taste}
-                            </Text>
-                            <Text py="2" align="left" color="#00203D">
-                              Jarak : {distance / 1000 + ' km'}
-                            </Text>
-                            <Text py="2" align="left" fontWeight="bold" color="#00203D">
-                              Skor :{' '}
-                              {Math.round(item.score * 1000000) / 10000}%
-                            </Text>
-                          </CardBody>
-                        </Stack>
-                      </Card>
-                    )}) : restaurantResult.map(item => {
                       const distance = getDistance(
                         {
                           latitude: selectedPlace.location.lat,
@@ -522,14 +474,14 @@ const RekomendasiRestoran = props => {
                           direction={{ base: 'column', sm: 'row' }}
                           overflow="hidden"
                           variant="outline"
-                          bg="#F4B41A" 
+                          bg="#F4B41A"
                         >
                           <Image
                             objectFit="cover"
                             maxW={{ base: '100%', sm: '300px' }}
                             src={item.imageUrl}
                           />
-  
+
                           <Stack>
                             <CardBody>
                               <Heading size="md" align="left" color="#00203D">
@@ -547,15 +499,75 @@ const RekomendasiRestoran = props => {
                               <Text py="2" align="left" color="#00203D">
                                 Jarak : {distance / 1000 + ' km'}
                               </Text>
-                              <Text py="2" align="left" fontWeight="bold" color="#00203D">
+                              <Text
+                                py="2"
+                                align="left"
+                                fontWeight="bold"
+                                color="#00203D"
+                              >
                                 Skor :{' '}
                                 {Math.round(item.score * 1000000) / 10000}%
                               </Text>
                             </CardBody>
                           </Stack>
                         </Card>
-                      )
-                  })}
+                      );
+                    })
+                  : restaurantResult.map(item => {
+                      const distance = getDistance(
+                        {
+                          latitude: selectedPlace.location.lat,
+                          longitude: selectedPlace.location.lng,
+                        },
+                        {
+                          latitude: item.position.lat,
+                          longitude: item.position.lng,
+                        }
+                      );
+                      return (
+                        <Card
+                          direction={{ base: 'column', sm: 'row' }}
+                          overflow="hidden"
+                          variant="outline"
+                          bg="#F4B41A"
+                        >
+                          <Image
+                            objectFit="cover"
+                            maxW={{ base: '100%', sm: '300px' }}
+                            src={item.imageUrl}
+                          />
+
+                          <Stack>
+                            <CardBody>
+                              <Heading size="md" align="left" color="#00203D">
+                                {item.name}
+                              </Heading>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Harga : {item.price}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Pelayanan : {item.service}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Rating Rasa : {item.taste}
+                              </Text>
+                              <Text py="2" align="left" color="#00203D">
+                                Jarak : {distance / 1000 + ' km'}
+                              </Text>
+                              <Text
+                                py="2"
+                                align="left"
+                                fontWeight="bold"
+                                color="#00203D"
+                              >
+                                Skor :{' '}
+                                {Math.round(item.score * 1000000) / 10000}%
+                              </Text>
+                            </CardBody>
+                          </Stack>
+                        </Card>
+                      );
+                    })}
               </SimpleGrid>
               <Button
                 colorScheme="blue"
@@ -586,5 +598,5 @@ const RekomendasiRestoran = props => {
 };
 
 export default GoogleApiWrapper({
-  apiKey: 'AIzaSyDoQbL_paQvMmzGLuKhOLjqiOgaaXeOxDw',
+  apiKey: process.env.MAPAPIKEY,
 })(RekomendasiRestoran);

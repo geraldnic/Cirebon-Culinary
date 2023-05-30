@@ -37,7 +37,7 @@ const TouristAttractionList = () => {
   const [updateMessage, setUpdateMessage] = useState();
 
   useEffect(() => {
-    axios.get('http://localhost:3001/marker/getmarker').then(res => {
+    axios.get(process.env.SERVERURL + '/marker/getmarker').then(res => {
       setPlaces(res?.data ?? []);
     });
   }, [updateMessage]);
@@ -49,7 +49,7 @@ const TouristAttractionList = () => {
 
   const handleDelete = async () => {
     await axios
-      .post('http://localhost:3001/marker/deletemarker', {
+      .post(process.env.SERVERURL + '/marker/deletemarker', {
         id: selectedId,
       })
       .then(res => {
