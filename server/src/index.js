@@ -20,7 +20,7 @@ app.use("/food", foodsRouter);
 app.use("/restaurant", restaurantRouter);
 
 mongoose.connect(
-  `mongodb+srv://geraldnic:AbtatvF0Q2lX4baK@culinary.xrpmnsz.mongodb.net/culinary?retryWrites=true&w=majority`
+  process.env.MONGODB_URI
 );
 
-app.listen(3001, "0.0.0.0", () => console.log("SERVER STARTED!"));
+app.listen(3001, () => console.log("SERVER STARTED!"));
