@@ -10,6 +10,7 @@ import { restaurantRouter } from "./routes/restaurants.js";
 
 dotenv.config();
 const app = express();
+const port = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors());
@@ -23,4 +24,4 @@ mongoose.connect(
   process.env.MONGODB_URI
 );
 
-app.listen(3001 || process.env.PORT, () => console.log("SERVER STARTED!"));
+app.listen(port, "0.0.0.0", () => console.log("SERVER STARTED!"));
