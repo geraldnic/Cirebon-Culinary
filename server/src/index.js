@@ -23,4 +23,4 @@ mongoose.connect(
   process.env.MONGODB_URI
 );
 
-app.listen(3001, () => console.log("SERVER STARTED!"));
+app.listen(3001 || process.env.PORT, () => console.log("SERVER STARTED!"));
