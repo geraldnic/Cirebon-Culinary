@@ -23,4 +23,4 @@ mongoose.connect(
   `mongodb+srv://geraldnic:AbtatvF0Q2lX4baK@culinary.xrpmnsz.mongodb.net/culinary?retryWrites=true&w=majority`
 );
 
-app.listen(3001, () => console.log("SERVER STARTED!"));
+app.listen(3001, "0.0.0.0", () => console.log("SERVER STARTED!"));
