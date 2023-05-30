@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+const dotenv = require("dotenv");
+dotenv.config();
 
 import {userRouter} from './routes/users.js';
 import { markerRouter } from "./routes/marker.js";
