@@ -409,6 +409,8 @@ const Rekomendasi = props => {
       return [priceValue, serviceValue, tasteValue, distanceValue];
     });
 
+    console.log(decisionM);
+
     //Normalisasi Matrix Keputusan
     let x1 = 0;
     for (let i = 0; i < decisionM.length; i++) {
@@ -454,12 +456,15 @@ const Rekomendasi = props => {
       decisionM[i][3] = decisionM[i][3] / x4;
     }
 
+    console.log(decisionM);
+
     //Normalisasi Matrix Terbobot
     for (let j = 0; j < 4; j++) {
       for (let i = 0; i < decisionM.length; i++) {
         decisionM[i][j] = decisionM[i][j] * eigen[j];
       }
     }
+    console.log(decisionM);
 
     //Mencari Solusi Ideal Positif dan Negatif
     let idealSolution = [];
@@ -492,6 +497,7 @@ const Rekomendasi = props => {
 
     // Solusi Ideal Positif dan Negatif
     idealSolution = [aPlus, aMinus];
+    console.log(idealSolution);
 
     //Menghitung Jarak Solusi Ideal Positif dan Negatif
     //Jarak Solusi Ideal Positif
@@ -501,22 +507,25 @@ const Rekomendasi = props => {
     let minusTemp = 0;
     const d = decisionM.map(item => {
       for (let j = 0; j < 4; j++) {
-        plusTemp = plusTemp + Math.pow(item[j] + idealSolution[0][j], 2);
+        plusTemp = plusTemp + Math.pow(item[j] - idealSolution[0][j], 2);
       }
       for (let j = 0; j < 4; j++) {
-        minusTemp = minusTemp + Math.pow(item[j] + idealSolution[1][j], 2);
+        minusTemp = minusTemp + Math.pow(item[j] - idealSolution[1][j], 2);
       }
       minusTemp = Math.sqrt(minusTemp);
       dMinus = minusTemp;
-      minusTemp = 0;
 
       plusTemp = Math.sqrt(plusTemp);
       dPlus = plusTemp;
-      plusTemp = 0;
 
-      console.log(item[0]);
+      plusTemp = 0;
+      minusTemp = 0;
+
+      console.log(item);
       return [dPlus, dMinus];
     });
+
+    console.log(d);
 
     //Mencari Nilai Preferensi
     //Matrix Preferensi
@@ -909,7 +918,12 @@ const Rekomendasi = props => {
               Mohon maaf, tempat kuliner tidak tersedia untuk menu makanan yang
               kamu pilih. Silahkan coba cari rekomendasi lainnya.
             </Text>
-            <Button variant="ghost" colorScheme="blue" onClick={resetMenu} mt={5}>
+            <Button
+              variant="ghost"
+              colorScheme="blue"
+              onClick={resetMenu}
+              mt={5}
+            >
               Pilih Menu Lain
             </Button>
           </Box>
@@ -963,111 +977,121 @@ const Rekomendasi = props => {
               <SimpleGrid columns={[1, null, 1]} spacing={[5, null, 10]}>
                 {restaurantResult.length >= 5
                   ? restaurantResult.slice(0, 5).map(item => {
-                      const distance = getDistance(
-                        {
-                          latitude: selectedPlace.location.lat,
-                          longitude: selectedPlace.location.lng,
-                        },
-                        {
-                          latitude: item.position.lat,
-                          longitude: item.position.lng,
-                        }
-                      );
-                      return (
-                        <Card
-                          direction={{ base: 'column', sm: 'row' }}
-                          overflow="hidden"
-                          variant="outline"
-                          bg="#F4B41A"
-                        >
-                          <Image
-                            objectFit="cover"
-                            maxW={{ base: '100%', sm: '300px' }}
-                            src={item.imageUrl}
-                          />
+                      if (item.score !== 0) {
+                        const distance = getDistance(
+                          {
+                            latitude: selectedPlace.location.lat,
+                            longitude: selectedPlace.location.lng,
+                          },
+                          {
+                            latitude: item.position.lat,
+                            longitude: item.position.lng,
+                          }
+                        );
+                        return (
+                          <Card
+                            direction={{ base: 'column', sm: 'row' }}
+                            overflow="hidden"
+                            variant="outline"
+                            bg="#F4B41A"
+                          >
+                            <Image
+                              objectFit="cover"
+                              maxW={{ base: '100%', sm: '300px' }}
+                              src={item.imageUrl}
+                            />
 
-                          <Stack>
-                            <CardBody>
-                              <Heading size="md" align="left">
-                                {item.name}
-                              </Heading>
-                              <Text py="2" align="left" color="#00203D">
-                                Rating Harga : {item.price}
-                              </Text>
-                              <Text py="2" align="left" color="#00203D">
-                                Rating Pelayanan : {item.service}
-                              </Text>
-                              <Text py="2" align="left" color="#00203D">
-                                Rating Rasa : {item.taste}
-                              </Text>
-                              <Text
-                                py="2"
-                                align="left"
-                                fontWeight="bold"
-                                color="#00203D"
-                              >
-                                Skor :{' '}
-                                {Math.round(item.score * 1000000) / 1000000}
-                              </Text>
-                            </CardBody>
-                          </Stack>
-                        </Card>
-                      );
+                            <Stack>
+                              <CardBody>
+                                <Heading size="md" align="left">
+                                  {item.name}
+                                </Heading>
+                                <Text py="2" align="left" color="#00203D">
+                                  Rating Harga : {item.price}
+                                </Text>
+                                <Text py="2" align="left" color="#00203D">
+                                  Rating Pelayanan : {item.service}
+                                </Text>
+                                <Text py="2" align="left" color="#00203D">
+                                  Rating Rasa : {item.taste}
+                                </Text>
+                                <Text py="2" align="left" color="#00203D">
+                                  Jarak : {distance / 1000 + ' km'}
+                                </Text>
+                                <Text
+                                  py="2"
+                                  align="left"
+                                  fontWeight="bold"
+                                  color="#00203D"
+                                >
+                                  Skor :{' '}
+                                  {Math.round(item.score * 1000000) / 10000}%
+                                </Text>
+                              </CardBody>
+                            </Stack>
+                          </Card>
+                        );
+                      }
                     })
                   : restaurantResult.map(item => {
-                      const distance = getDistance(
-                        {
-                          latitude: selectedPlace.location.lat,
-                          longitude: selectedPlace.location.lng,
-                        },
-                        {
-                          latitude: item.position.lat,
-                          longitude: item.position.lng,
-                        }
-                      );
-                      return (
-                        <Card
-                          direction={{ base: 'column', sm: 'row' }}
-                          overflow="hidden"
-                          variant="outline"
-                          bg="#F4B41A"
-                        >
-                          <Image
-                            objectFit="cover"
-                            maxW={{ base: '100%', sm: '300px' }}
-                            src={item.imageUrl}
-                          />
+                    if(restaurantResult.length == 1){
+                      item.score = 1;
+                    }
+                      if (item.score !== 0) {
+                        const distance = getDistance(
+                          {
+                            latitude: selectedPlace.location.lat,
+                            longitude: selectedPlace.location.lng,
+                          },
+                          {
+                            latitude: item.position.lat,
+                            longitude: item.position.lng,
+                          }
+                        );
+                        return (
+                          <Card
+                            direction={{ base: 'column', sm: 'row' }}
+                            overflow="hidden"
+                            variant="outline"
+                            bg="#F4B41A"
+                          >
+                            <Image
+                              objectFit="cover"
+                              maxW={{ base: '100%', sm: '300px' }}
+                              src={item.imageUrl}
+                            />
 
-                          <Stack>
-                            <CardBody>
-                              <Heading size="md" align="left" color="#00203D">
-                                {item.name}
-                              </Heading>
-                              <Text py="2" align="left" color="#00203D">
-                                Rating Harga : {item.price}
-                              </Text>
-                              <Text py="2" align="left" color="#00203D">
-                                Rating Pelayanan : {item.service}
-                              </Text>
-                              <Text py="2" align="left" color="#00203D">
-                                Rating Rasa : {item.taste}
-                              </Text>
-                              <Text py="2" align="left" color="#00203D">
-                                Jarak : {distance / 1000 + ' km'}
-                              </Text>
-                              <Text
-                                py="2"
-                                align="left"
-                                fontWeight="bold"
-                                color="#00203D"
-                              >
-                                Skor :{' '}
-                                {Math.round(item.score * 1000000) / 1000000}
-                              </Text>
-                            </CardBody>
-                          </Stack>
-                        </Card>
-                      );
+                            <Stack>
+                              <CardBody>
+                                <Heading size="md" align="left" color="#00203D">
+                                  {item.name}
+                                </Heading>
+                                <Text py="2" align="left" color="#00203D">
+                                  Rating Harga : {item.price}
+                                </Text>
+                                <Text py="2" align="left" color="#00203D">
+                                  Rating Pelayanan : {item.service}
+                                </Text>
+                                <Text py="2" align="left" color="#00203D">
+                                  Rating Rasa : {item.taste}
+                                </Text>
+                                <Text py="2" align="left" color="#00203D">
+                                  Jarak : {distance / 1000 + ' km'}
+                                </Text>
+                                <Text
+                                  py="2"
+                                  align="left"
+                                  fontWeight="bold"
+                                  color="#00203D"
+                                >
+                                  Skor :{' '}
+                                  {Math.round(item.score * 1000000) / 10000}%
+                                </Text>
+                              </CardBody>
+                            </Stack>
+                          </Card>
+                        );
+                      }
                     })}
               </SimpleGrid>
               <Button

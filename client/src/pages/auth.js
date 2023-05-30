@@ -9,7 +9,6 @@ import RegisterForm from '../components/auth/registerForm';
 const Auth = () => {
   let [searchParams, setSearchParams] = useSearchParams();
   let mode = searchParams.get('mode');
-  console.log(mode);
 
   let captionBtn =
     mode === 'signin' ? "Don't have an account?" : 'Already have an account?';

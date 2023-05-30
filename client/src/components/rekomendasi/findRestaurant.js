@@ -17,10 +17,10 @@ import {
 import { BiArrowBack } from 'react-icons/bi';
 
 const FindRestaurant = props => {
-  const [price, setPrice] = useState();
-  const [service, setService] = useState();
-  const [taste, setTaste] = useState();
-  const [distance, setDistance] = useState();
+  const [price, setPrice] = useState(1);
+  const [service, setService] = useState(1);
+  const [taste, setTaste] = useState(1);
+  const [distance, setDistance] = useState(1);
   return (
     <Box
       pt={6}
@@ -86,7 +86,7 @@ const SliderComponent = props => {
               <SliderTrack>
                 <SliderFilledTrack bg="tomato" />
               </SliderTrack>
-              <SliderMark color="white" value={1} {...labelStyles}>
+              <SliderMark color="white" value={1}  {...labelStyles}>
                 1
               </SliderMark>
               <SliderMark color="white" value={2} {...labelStyles}>

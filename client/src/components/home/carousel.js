@@ -9,7 +9,7 @@ import {
   IconProps,
 } from '@chakra-ui/react';
 
-export default function CallToActionWithIllustration() {
+export default function CallToActionWithIllustration(props) {
   return (
     <Container maxW={'100vw'} bg="white" w="100vw">
       <Stack
@@ -30,8 +30,8 @@ export default function CallToActionWithIllustration() {
         </Heading>
         <Text color={'gray.500'} maxW={'3xl'}>
           Sistem rekomendasi menyediakan beragam rekomendasi menu makanan maupun
-          tempat kuliner yang sesuai dengan preferensimu. Cari makanan dan tempat
-          kuliner khas Cirebon gaperlu bingung.
+          tempat kuliner yang sesuai dengan preferensimu. Cari makanan dan
+          tempat kuliner khas Cirebon gaperlu bingung.
         </Text>
         <Stack spacing={6} direction={'row'}>
           <Button
@@ -40,10 +40,11 @@ export default function CallToActionWithIllustration() {
             colorScheme={'orange'}
             bg={'orange.400'}
             _hover={{ bg: 'orange.500' }}
+            onClick={props.handleGetStartedClick}
           >
             Cari Rekomendasi
           </Button>
-          <Button rounded={'full'} px={6}>
+          <Button rounded={'full'} px={6} onClick={props.handleLearnMoreClick}>
             Pelajari
           </Button>
         </Stack>

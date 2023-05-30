@@ -337,10 +337,10 @@ const RekomendasiRestoran = props => {
     let minusTemp = 0;
     const d = decisionM.map(item => {
       for (let j = 0; j < 4; j++) {
-        plusTemp = plusTemp + Math.pow(item[j] + idealSolution[0][j], 2);
+        plusTemp = plusTemp + Math.pow(item[j] - idealSolution[0][j], 2);
       }
       for (let j = 0; j < 4; j++) {
-        minusTemp = minusTemp + Math.pow(item[j] + idealSolution[1][j], 2);
+        minusTemp = minusTemp + Math.pow(item[j] - idealSolution[1][j], 2);
       }
       minusTemp = Math.sqrt(minusTemp);
       dMinus = minusTemp;
@@ -501,12 +501,12 @@ const RekomendasiRestoran = props => {
                             </Text>
                             <Text py="2" align="left" fontWeight="bold" color="#00203D">
                               Skor :{' '}
-                              {Math.round(item.score * 1000000) / 1000000}
+                              {Math.round(item.score * 1000000) / 10000}%
                             </Text>
                           </CardBody>
                         </Stack>
                       </Card>
-                    )}) : restaurantResult.slice(0, 5).map(item => {
+                    )}) : restaurantResult.map(item => {
                       const distance = getDistance(
                         {
                           latitude: selectedPlace.location.lat,
@@ -549,7 +549,7 @@ const RekomendasiRestoran = props => {
                               </Text>
                               <Text py="2" align="left" fontWeight="bold" color="#00203D">
                                 Skor :{' '}
-                                {Math.round(item.score * 1000000) / 1000000}
+                                {Math.round(item.score * 1000000) / 10000}%
                               </Text>
                             </CardBody>
                           </Stack>

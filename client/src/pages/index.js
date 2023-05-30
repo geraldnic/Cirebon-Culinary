@@ -1,27 +1,32 @@
+import React, { useRef } from 'react';
 import { Box } from '@chakra-ui/react';
-import CallToActionWithIllustration from '../components/carousel';
-import { getDistance } from 'geolib';
+import { Fade, Slide, Zoom } from 'react-reveal';
+import CallToActionWithIllustration from '../components/home/carousel';
+import Tutorial from '../components/home/tutorial';
+import HomeCard from '../components/home/homeCard';
 
 const Home = () => {
-  const place1 = {
-    latitude: -6.7263,
-    longitude: 108.571,
-  };
+  const tutorialRef = useRef(null);
+  const homeCardRef = useRef(null);
 
-  const place2 = {
-    latitude: -6.6978,
-    longitude: 108.5561,
-  };
+  const handleGetStartedClick = () => {
+    homeCardRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
 
-  const distance = getDistance(
-    { latitude: place1.latitude, longitude: place1.longitude },
-    { latitude: place2.latitude, longitude: place2.longitude }
-  );
-
-  console.log(distance + ' meters');
+  const handleLearnMoreClick = () => {
+    tutorialRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
   return (
     <Box>
-      <CallToActionWithIllustration/>
+      <Fade>
+        <CallToActionWithIllustration handleGetStartedClick={handleGetStartedClick} handleLearnMoreClick={handleLearnMoreClick}/>
+      </Fade>
+      <Fade animateOnce={false}>
+        <Tutorial ref={tutorialRef}/>
+      </Fade>
+      <Slide up animateOnce={false}>
+        <HomeCard ref={homeCardRef}/>
+      </Slide>
     </Box>
   );
 };

@@ -51,7 +51,7 @@ export default function WithSubnavigation() {
     },
     {
       label: 'About',
-      href: '#',
+      href: '/about',
     },
   ];
 
