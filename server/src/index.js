@@ -1,14 +1,14 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-const dotenv = require("dotenv");
-dotenv.config();
+import dotenv from "dotenv";
 
 import {userRouter} from './routes/users.js';
 import { markerRouter } from "./routes/marker.js";
 import { foodsRouter } from "./routes/foods.js";
 import { restaurantRouter } from "./routes/restaurants.js";
 
+dotenv.config();
 const app = express();
 
 app.use(express.json());
