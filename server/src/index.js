@@ -3,7 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import {userRouter} from './routes/users.js';
+import { userRouter } from "./routes/users.js";
 import { markerRouter } from "./routes/marker.js";
 import { foodsRouter } from "./routes/foods.js";
 import { restaurantRouter } from "./routes/restaurants.js";
@@ -20,7 +20,7 @@ app.use("/food", foodsRouter);
 app.use("/restaurant", restaurantRouter);
 
 mongoose.connect(
-  process.env.MONGODBCONNECTION
+  `mongodb+srv://geraldnic:${process.env.MONGODBPASSWORD}@culinary.xrpmnsz.mongodb.net/culinary?retryWrites=true&w=majority`
 );
 
 app.listen(3001, () => console.log("SERVER STARTED!"));
