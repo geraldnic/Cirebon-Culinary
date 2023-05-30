@@ -38,7 +38,7 @@ const FoodList = () => {
   const [updateMessage, setUpdateMessage] = useState();
 
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/food/getfood').then(res => {
+    axios.get(process.env.REACT_APP_SERVERURL + '/food/getfood').then(res => {
       setFoods(res?.data ?? []);
     });
   }, [updateMessage]);
@@ -50,7 +50,7 @@ const FoodList = () => {
 
   const handleDelete = async () => {
     await axios
-      .post(process.env.SERVERURL + '/food/deletefood', {
+      .post(process.env.REACT_APP_SERVERURL + '/food/deletefood', {
         id: selectedId,
       })
       .then(res => {

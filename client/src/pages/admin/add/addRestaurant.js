@@ -47,7 +47,7 @@ const AddRestaurant = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/food/getfood').then(res => {
+    axios.get(process.env.REACT_APP_SERVERURL + '/food/getfood').then(res => {
       setFood(res?.data ?? []);
     });
   }, []);
@@ -66,7 +66,7 @@ const AddRestaurant = () => {
     try {
       const nonEmptyFoodId = foodId.filter(id => id.trim() !== '');
       const response = await axios.post(
-        process.env.SERVERURL + '/restaurant/addrestaurant',
+        process.env.REACT_APP_SERVERURL + '/restaurant/addrestaurant',
         {
           name,
           imageUrl,

@@ -67,11 +67,13 @@ const Rekomendasi = props => {
 
   //FETCH MARKER AND FOOD TYPE
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/marker/getmarker').then(res => {
-      setMarker(res?.data ?? []);
-    });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/marker/getmarker')
+      .then(res => {
+        setMarker(res?.data ?? []);
+      });
 
-    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
+    axios.get(process.env.REACT_APP_SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
   }, []);
@@ -82,7 +84,7 @@ const Rekomendasi = props => {
       const getIngredient = async () => {
         try {
           await axios
-            .post(process.env.SERVERURL + '/food/getingredient', {
+            .post(process.env.REACT_APP_SERVERURL + '/food/getingredient', {
               typeId: selectedType.id,
             })
             .then(res => {
@@ -102,7 +104,7 @@ const Rekomendasi = props => {
       const getBroth = async () => {
         try {
           await axios
-            .post(process.env.SERVERURL + '/food/getbroth', {
+            .post(process.env.REACT_APP_SERVERURL + '/food/getbroth', {
               ingredientId: selectedIngredient.id,
             })
             .then(res => {
@@ -122,7 +124,7 @@ const Rekomendasi = props => {
       const getServing = async () => {
         try {
           await axios
-            .post(process.env.SERVERURL + '/food/getserving', {
+            .post(process.env.REACT_APP_SERVERURL + '/food/getserving', {
               ingredientId: selectedIngredient.id,
               brothId: selectedBroth.id,
             })
@@ -143,7 +145,7 @@ const Rekomendasi = props => {
       const getFood = async () => {
         try {
           await axios
-            .post(process.env.SERVERURL + '/food/getfoodresult', {
+            .post(process.env.REACT_APP_SERVERURL + '/food/getfoodresult', {
               typeId: selectedType.id,
               ingredientId: selectedIngredient.id,
               brothId: selectedBroth.id,
@@ -166,9 +168,12 @@ const Rekomendasi = props => {
       const getSomeRestaurant = async () => {
         try {
           await axios
-            .post(process.env.SERVERURL + '/restaurant/getsomerestaurant', {
-              foodId: selectedFood.id,
-            })
+            .post(
+              process.env.REACT_APP_SERVERURL + '/restaurant/getsomerestaurant',
+              {
+                foodId: selectedFood.id,
+              }
+            )
             .then(res => {
               setSomeRestaurant(res?.data ?? []);
             });
@@ -1129,5 +1134,5 @@ const Rekomendasi = props => {
 };
 
 export default GoogleApiWrapper({
-  apiKey: process.env.MAPAPIKEY,
+  apiKey: process.env.REACT_APP_MAPAPIKEY,
 })(Rekomendasi);

@@ -37,10 +37,13 @@ const LoginForm = props => {
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const response = await axios.post(process.env.SERVERURL + '/auth/login', {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        process.env.REACT_APP_SERVERURL + '/auth/login',
+        {
+          username,
+          password,
+        }
+      );
 
       if (response.data.code === 200) {
         setCookies('access_token', response.data.token);

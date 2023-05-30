@@ -80,7 +80,7 @@ const EditFood = () => {
   // FETCH CURRENT FOOD
   useEffect(() => {
     axios
-      .post(process.env.SERVERURL + '/food/getcurrfood', {
+      .post(process.env.REACT_APP_SERVERURL + '/food/getcurrfood', {
         id,
       })
       .then(res => {
@@ -102,18 +102,24 @@ const EditFood = () => {
 
   // RE-FETCH DATA
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
+    axios.get(process.env.REACT_APP_SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
-    axios.get(process.env.SERVERURL + '/food/getallingredient').then(res => {
-      setIngredient(res?.data ?? []);
-    });
-    axios.get(process.env.SERVERURL + '/food/getallbroth').then(res => {
-      setBroth(res?.data ?? []);
-    });
-    axios.get(process.env.SERVERURL + '/food/getallserving').then(res => {
-      setServing(res?.data ?? []);
-    });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/food/getallingredient')
+      .then(res => {
+        setIngredient(res?.data ?? []);
+      });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/food/getallbroth')
+      .then(res => {
+        setBroth(res?.data ?? []);
+      });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/food/getallserving')
+      .then(res => {
+        setServing(res?.data ?? []);
+      });
   }, [addedSomething]);
 
   // OPEN ADD INGREDIENT MODAL
@@ -146,7 +152,7 @@ const EditFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/food/addingredient',
+        process.env.REACT_APP_SERVERURL + '/food/addingredient',
         {
           name: addName,
           description: addDescription,
@@ -183,7 +189,7 @@ const EditFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/food/addserving',
+        process.env.REACT_APP_SERVERURL + '/food/addserving',
         {
           name: addName,
           description: addDescription,
@@ -223,7 +229,7 @@ const EditFood = () => {
 
     try {
       const response = await axios.put(
-        process.env.SERVERURL + '/food/editfood',
+        process.env.REACT_APP_SERVERURL + '/food/editfood',
         {
           id,
           name,

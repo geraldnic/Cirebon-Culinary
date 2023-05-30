@@ -41,7 +41,7 @@ const EditTouristAttraction = () => {
   useEffect(() => {
     const fetchSpecificMarker = async () => {
       await axios
-        .post(process.env.SERVERURL + '/marker/getspecificmarker', {
+        .post(process.env.REACT_APP_SERVERURL + '/marker/getspecificmarker', {
           id,
         })
         .then(res => {
@@ -63,7 +63,7 @@ const EditTouristAttraction = () => {
     event.preventDefault();
     try {
       const response = await axios.put(
-        process.env.SERVERURL + '/marker/editmarker',
+        process.env.REACT_APP_SERVERURL + '/marker/editmarker',
         {
           id,
           name,

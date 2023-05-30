@@ -27,13 +27,17 @@ const RekomendasiRestoran = props => {
   const [restaurantResult, setRestaurantResult] = useState();
 
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/marker/getmarker').then(res => {
-      setMarker(res?.data ?? []);
-    });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/marker/getmarker')
+      .then(res => {
+        setMarker(res?.data ?? []);
+      });
 
-    axios.get(process.env.SERVERURL + '/restaurant/getrestaurant').then(res => {
-      setRestaurant(res?.data ?? []);
-    });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/restaurant/getrestaurant')
+      .then(res => {
+        setRestaurant(res?.data ?? []);
+      });
   }, []);
 
   const handleClick = (mapProps, map, clickEvent) => {
@@ -598,5 +602,5 @@ const RekomendasiRestoran = props => {
 };
 
 export default GoogleApiWrapper({
-  apiKey: process.env.MAPAPIKEY,
+  apiKey: process.env.REACT_APP_MAPAPIKEY,
 })(RekomendasiRestoran);

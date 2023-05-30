@@ -36,9 +36,11 @@ const RestaurantList = () => {
   const [updateMessage, setUpdateMessage] = useState();
 
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/restaurant/getrestaurant').then(res => {
-      setRestaurant(res?.data ?? []);
-    });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/restaurant/getrestaurant')
+      .then(res => {
+        setRestaurant(res?.data ?? []);
+      });
   }, [updateMessage]);
 
   const handleDeleteButton = id => {
@@ -48,7 +50,7 @@ const RestaurantList = () => {
 
   const handleDelete = async () => {
     await axios
-      .post(process.env.SERVERURL + '/restaurant/deleterestaurant', {
+      .post(process.env.REACT_APP_SERVERURL + '/restaurant/deleterestaurant', {
         id: selectedId,
       })
       .then(res => {

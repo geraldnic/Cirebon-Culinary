@@ -51,9 +51,12 @@ const EditRestaurant = () => {
   useEffect(() => {
     const fetchSpecificRestaurant = async () => {
       await axios
-        .post(process.env.SERVERURL + '/restaurant/getspecificrestaurant', {
-          id,
-        })
+        .post(
+          process.env.REACT_APP_SERVERURL + '/restaurant/getspecificrestaurant',
+          {
+            id,
+          }
+        )
         .then(res => {
           setCurrentRestaurant(res?.data ?? []);
         });
@@ -78,7 +81,7 @@ const EditRestaurant = () => {
     event.preventDefault();
     try {
       const response = await axios.put(
-        process.env.SERVERURL + '/restaurant/editrestaurant',
+        process.env.REACT_APP_SERVERURL + '/restaurant/editrestaurant',
         {
           id,
           name,

@@ -74,18 +74,24 @@ const AddFood = () => {
   };
 
   useEffect(() => {
-    axios.get(process.env.SERVERURL + '/food/gettype').then(res => {
+    axios.get(process.env.REACT_APP_SERVERURL + '/food/gettype').then(res => {
       setType(res?.data ?? []);
     });
-    axios.get(process.env.SERVERURL + '/food/getallingredient').then(res => {
-      setIngredient(res?.data ?? []);
-    });
-    axios.get(process.env.SERVERURL + '/food/getallbroth').then(res => {
-      setBroth(res?.data ?? []);
-    });
-    axios.get(process.env.SERVERURL + '/food/getallserving').then(res => {
-      setServing(res?.data ?? []);
-    });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/food/getallingredient')
+      .then(res => {
+        setIngredient(res?.data ?? []);
+      });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/food/getallbroth')
+      .then(res => {
+        setBroth(res?.data ?? []);
+      });
+    axios
+      .get(process.env.REACT_APP_SERVERURL + '/food/getallserving')
+      .then(res => {
+        setServing(res?.data ?? []);
+      });
   }, [addedSomething]);
 
   const openModal = () => {
@@ -100,7 +106,7 @@ const AddFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/food/addingredient',
+        process.env.REACT_APP_SERVERURL + '/food/addingredient',
         {
           name: addName,
           description: addDescription,
@@ -137,7 +143,7 @@ const AddFood = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/food/addserving',
+        process.env.REACT_APP_SERVERURL + '/food/addserving',
         {
           name: addName,
           description: addDescription,
@@ -177,7 +183,7 @@ const AddFood = () => {
 
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/food/addfood',
+        process.env.REACT_APP_SERVERURL + '/food/addfood',
         {
           name,
           description,

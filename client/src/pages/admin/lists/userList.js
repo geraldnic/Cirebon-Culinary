@@ -45,7 +45,7 @@ const UserList = () => {
     event.preventDefault();
     try {
       const response = await axios.put(
-        process.env.SERVERURL + '/auth/changepassword',
+        process.env.REACT_APP_SERVERURL + '/auth/changepassword',
         {
           username,
           currPassword,

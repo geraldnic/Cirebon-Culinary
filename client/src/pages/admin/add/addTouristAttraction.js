@@ -39,7 +39,7 @@ const AddTouristAttraction = () => {
 
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/marker/addmarker',
+        process.env.REACT_APP_SERVERURL + '/marker/addmarker',
         {
           name,
           position: {

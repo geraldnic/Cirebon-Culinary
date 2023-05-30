@@ -46,7 +46,7 @@ const RegisterForm = props => {
 
     try {
       const response = await axios.post(
-        process.env.SERVERURL + '/auth/register',
+        process.env.REACT_APP_SERVERURL + '/auth/register',
         {
           username,
           password,
