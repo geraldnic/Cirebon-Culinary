@@ -1,5 +1,4 @@
 import { useCookies } from 'react-cookie';
-
 import {
   Box,
   Flex,
@@ -17,9 +16,7 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
-
 import { Link as ReactLink } from 'react-router-dom';
-
 import {
   HamburgerIcon,
   CloseIcon,
@@ -100,7 +97,11 @@ export default function WithSubnavigation() {
             aria-label={'Toggle Navigation'}
           />
         </Flex>
-        <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
+        <Flex
+          flex={{ base: 3 }}
+          justify={{ base: 'center', md: 'start' }}
+          align="center"
+        >
           {!cookies.access_token ? (
             <Link
               _hover={{
@@ -108,13 +109,26 @@ export default function WithSubnavigation() {
               }}
             >
               <ReactLink to="/">
-                <Text
-                  fontFamily={'heading'}
-                  fontWeight={'bold'}
-                  color="#FF001F"
-                >
-                  Rekomendasi Kuliner Cirebon
-                </Text>
+                <Flex direction="row" align="center">
+                  <Box border='2px solid #FFC300' px={2} borderRadius='50px'>
+                    <Text
+                      fontFamily={'heading'}
+                      fontSize={'2xl'}
+                      fontWeight={'bold'}
+                      color="#FF001F"
+                    >
+                      CE
+                    </Text>
+                  </Box>
+                  <Text
+                    fontFamily={'heading'}
+                    fontWeight={'bold'}
+                    color="#FF001F"
+                    ml={2}
+                  >
+                    Cirebon Eats
+                  </Text>
+                </Flex>
               </ReactLink>
             </Link>
           ) : (
@@ -129,7 +143,7 @@ export default function WithSubnavigation() {
                   fontWeight={'bold'}
                   color="#FF001F"
                 >
-                  Rekomendasi Kuliner Cirebon
+                  Cirebon Culinary
                 </Text>
               </ReactLink>
             </Link>
@@ -315,24 +329,6 @@ const MobileNavItem = ({ label, children, href }) => {
           />
         )}
       </Flex>
-
-      <Collapse in={isOpen} animateOpacity style={{ marginTop: '0!important' }}>
-        <Stack
-          mt={2}
-          pl={4}
-          borderLeft={1}
-          borderStyle={'solid'}
-          borderColor={useColorModeValue('gray.200', 'gray.700')}
-          align={'start'}
-        >
-          {children &&
-            children.map(child => (
-              <Link key={child.label} py={2}>
-                <ReactLink to={child.href}>{child.label}</ReactLink>
-              </Link>
-            ))}
-        </Stack>
-      </Collapse>
     </Stack>
   );
 };

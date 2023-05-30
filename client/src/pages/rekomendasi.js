@@ -24,6 +24,7 @@ import {
   CardFooter,
   ButtonGroup,
   Flex,
+  Spinner,
 } from '@chakra-ui/react';
 import HistoryTable from '../components/rekomendasi/historyTable';
 import FindRestaurant from '../components/rekomendasi/findRestaurant';
@@ -64,6 +65,22 @@ const Rekomendasi = props => {
     name: '',
   });
   const [selectedPlace, setSelectedPlace] = useState();
+
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, [
+    selectedPlace,
+    selectedType,
+    selectedIngredient,
+    selectedBroth,
+    selectedServing,
+    selectedFood,
+    restaurantResult
+  ]);
 
   //FETCH MARKER AND FOOD TYPE
   useEffect(() => {
@@ -1120,16 +1137,34 @@ const Rekomendasi = props => {
   };
 
   return (
-    <Box bg="black" pt={10}>
-      {renderMapComponent()}
-      {renderTypeCard()}
-      {renderIngredientCard()}
-      {renderBrothCard()}
-      {renderServingCard()}
-      {renderFoodCard()}
-      {renderRestaurant()}
-      {renderResult()}
-    </Box>
+    <>
+      {isLoading ? (
+        <Center position="relative" height="100vh">
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="red.500"
+            size="xl"
+            position="absolute"
+            top="30%"
+            transform="translateY(-50%)"
+            margin="0"
+          />
+        </Center>
+      ) : (
+        <Box bg="black" pt={10}>
+          {renderMapComponent()}
+          {renderTypeCard()}
+          {renderIngredientCard()}
+          {renderBrothCard()}
+          {renderServingCard()}
+          {renderFoodCard()}
+          {renderRestaurant()}
+          {renderResult()}
+        </Box>
+      )}
+    </>
   );
 };
 

@@ -14,6 +14,8 @@ import {
   Stack,
   CardFooter,
   Heading,
+  Center,
+  Spinner
 } from '@chakra-ui/react';
 import { BiArrowBack } from 'react-icons/bi';
 
@@ -25,6 +27,15 @@ const RekomendasiRestoran = props => {
   const [restaurant, setRestaurant] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState();
   const [restaurantResult, setRestaurantResult] = useState();
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, [selectedPlace, restaurantResult]);
 
   useEffect(() => {
     axios
@@ -593,11 +604,29 @@ const RekomendasiRestoran = props => {
     return null;
   };
   return (
-    <Box bg="black" pt={10}>
-      {renderMapComponent()}
-      {renderRestaurant()}
-      {renderResult()}
-    </Box>
+    <>
+      {isLoading ? (
+        <Center position="relative" height="100vh">
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="red.500"
+            size="xl"
+            position="absolute"
+            top="30%"
+            transform="translateY(-50%)"
+            margin="0"
+          />
+        </Center>
+      ) : (
+        <Box bg="black" pt={10}>
+          {renderMapComponent()}
+          {renderRestaurant()}
+          {renderResult()}
+        </Box>
+      )}
+    </>
   );
 };
 

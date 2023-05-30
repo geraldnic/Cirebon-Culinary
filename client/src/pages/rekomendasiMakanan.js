@@ -16,6 +16,7 @@ import {
   CardFooter,
   ButtonGroup,
   Image,
+  Spinner,
 } from '@chakra-ui/react';
 import { BiArrowBack } from 'react-icons/bi';
 import CriteriaCard from '../components/rekomendasi/criteriaCard';
@@ -49,6 +50,15 @@ const RekomendasiMakanan = () => {
     id: '',
     name: '',
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, [selectedType, selectedIngredient, selectedBroth, selectedServing]);
 
   //FETCH FOOD TYPE
   useEffect(() => {
@@ -147,12 +157,6 @@ const RekomendasiMakanan = () => {
     setSelectedBroth({});
     setSelectedServing({});
   };
-
-  console.log(type);
-  console.log(ingredient);
-  console.log(broth);
-  console.log(serving);
-  console.log(food);
 
   const renderTypeCard = () => {
     if (!selectedType.id) {
@@ -462,13 +466,31 @@ const RekomendasiMakanan = () => {
     }
   };
   return (
-    <Box bg="black" pt={10}>
-      {renderTypeCard()}
-      {renderIngredientCard()}
-      {renderBrothCard()}
-      {renderServingCard()}
-      {renderFoodCard()}
-    </Box>
+    <>
+      {isLoading ? (
+        <Center position='relative' height='100vh'>
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="red.500"
+            size="xl"
+            position='absolute'
+            top='30%'
+            transform='translateY(-50%)'
+            margin='0'
+          />
+        </Center>
+      ) : (
+        <Box bg="black" pt={10}>
+          {renderTypeCard()}
+          {renderIngredientCard()}
+          {renderBrothCard()}
+          {renderServingCard()}
+          {renderFoodCard()}
+        </Box>
+      )}
+    </>
   );
 };
 
