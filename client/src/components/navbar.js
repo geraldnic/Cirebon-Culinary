@@ -137,14 +137,27 @@ export default function WithSubnavigation() {
                 textDecoration: 'none',
               }}
             >
-              <ReactLink to="/admin">
-                <Text
-                  fontFamily={'heading'}
-                  fontWeight={'bold'}
-                  color="#FF001F"
-                >
-                  Cirebon Culinary
-                </Text>
+              <ReactLink to="/">
+                <Flex direction="row" align="center">
+                  <Box border='2px solid #FFC300' px={2} borderRadius='50px'>
+                    <Text
+                      fontFamily={'heading'}
+                      fontSize={'2xl'}
+                      fontWeight={'bold'}
+                      color="#FF001F"
+                    >
+                      CE
+                    </Text>
+                  </Box>
+                  <Text
+                    fontFamily={'heading'}
+                    fontWeight={'bold'}
+                    color="#FF001F"
+                    ml={2}
+                  >
+                    Cirebon Eats
+                  </Text>
+                </Flex>
               </ReactLink>
             </Link>
           )}
