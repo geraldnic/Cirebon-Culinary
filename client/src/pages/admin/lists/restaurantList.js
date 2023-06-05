@@ -26,6 +26,8 @@ import {
   ModalFooter,
   useDisclosure,
   Box,
+  Flex,
+  Input,
 } from '@chakra-ui/react';
 
 import { Link } from 'react-router-dom';
@@ -33,6 +35,7 @@ const RestaurantList = () => {
   const [restaurant, setRestaurant] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedId, setSelectedId] = useState();
+  const [searchName, setSearchName] = useState('');
   const [updateMessage, setUpdateMessage] = useState();
 
   useEffect(() => {
@@ -63,15 +66,20 @@ const RestaurantList = () => {
   return (
     <Box bg="black" pt={10}>
       <Box m={5} p={10} bg="#00203D" borderRadius="10px">
-        <Text
-          fontSize="2xl"
-          fontWeight="bold"
-          align="center"
-          mb={10}
-          color="#ADEFD1FF"
-        >
+        <Text fontSize="2xl" fontWeight="bold" align="center" color="#ADEFD1FF">
           Daftar Tempat Kuliner
         </Text>
+        <Flex justifyContent="flex-end" mb={5}>
+          <Input
+            type="text"
+            placeholder="Cari Tempat Kuliner"
+            color="white"
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+            size="sm"
+            w="300px"
+          />
+        </Flex>
         <TableContainer maxH="550px" overflowY="scroll">
           <Table variant="striped" bg="white">
             <Thead
@@ -97,59 +105,75 @@ const RestaurantList = () => {
             </Thead>
             <Tbody>
               {restaurant &&
-                restaurant.map(item => {
-                  tableNumber += 1;
-                  console.log(item.foodId);
-                  return (
-                    <Tr key={item._id}>
-                      <Td maxW="200px" whiteSpace="initial">
-                        {tableNumber}
-                      </Td>
-                      <Td maxW="200px" whiteSpace="initial">
-                        {item._id}
-                      </Td>
-                      <Td maxW="200px" whiteSpace="initial">
-                        {item.name}
-                      </Td>
-                      <Td maxW="200px" whiteSpace="initial">
-                        {item.imageUrl}
-                      </Td>
-                      <Td
-                        maxW="200px"
-                        whiteSpace="initial"
-                      >{`(${item.position.lat}, ${item.position.lng})`}</Td>
-                      <Td maxW="210px" whiteSpace="initial">
-                        {item.foodId.map(id => (
-                          <p>{id}</p>
-                        ))}
-                      </Td>
-                      <Td maxW="200px" whiteSpace="initial" textAlign="center">
-                        {item.price}
-                      </Td>
-                      <Td maxW="200px" whiteSpace="initial" textAlign="center">
-                        {item.service}
-                      </Td>
-                      <Td maxW="200px" whiteSpace="initial" textAlign="center">
-                        {item.taste}
-                      </Td>
-                      <Td>
-                        <Link to={`edit/${item._id}`}>
-                          <Button variant="solid" colorScheme="blue">
-                            <RiEditBoxFill />
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="solid"
-                          colorScheme="red"
-                          ml={2}
-                          onClick={() => handleDeleteButton(item._id)}
+                restaurant
+                  .filter(item =>
+                    item.name.toLowerCase().includes(searchName.toLowerCase())
+                  )
+                  .map(item => {
+                    tableNumber += 1;
+                    console.log(item.foodId);
+                    return (
+                      <Tr key={item._id}>
+                        <Td maxW="200px" whiteSpace="initial">
+                          {tableNumber}
+                        </Td>
+                        <Td maxW="200px" whiteSpace="initial">
+                          {item._id}
+                        </Td>
+                        <Td maxW="200px" whiteSpace="initial">
+                          {item.name}
+                        </Td>
+                        <Td maxW="200px" whiteSpace="initial">
+                          {item.imageUrl}
+                        </Td>
+                        <Td
+                          maxW="200px"
+                          whiteSpace="initial"
+                        >{`(${item.position.lat}, ${item.position.lng})`}</Td>
+                        <Td maxW="210px" whiteSpace="initial">
+                          {item.foodId.map(id => (
+                            <p>{id}</p>
+                          ))}
+                        </Td>
+                        <Td
+                          maxW="200px"
+                          whiteSpace="initial"
+                          textAlign="center"
                         >
-                          <RiDeleteBin2Fill />
-                        </Button>
-                      </Td>
-                    </Tr>
-                  );
-                })}
+                          {item.price}
+                        </Td>
+                        <Td
+                          maxW="200px"
+                          whiteSpace="initial"
+                          textAlign="center"
+                        >
+                          {item.service}
+                        </Td>
+                        <Td
+                          maxW="200px"
+                          whiteSpace="initial"
+                          textAlign="center"
+                        >
+                          {item.taste}
+                        </Td>
+                        <Td>
+                          <Link to={`edit/${item._id}`}>
+                            <Button variant="solid" colorScheme="blue">
+                              <RiEditBoxFill />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="solid"
+                            colorScheme="red"
+                            ml={2}
+                            onClick={() => handleDeleteButton(item._id)}
+                          >
+                            <RiDeleteBin2Fill />
+                          </Button>
+                        </Td>
+                      </Tr>
+                    );
+                  })}
             </Tbody>
           </Table>
         </TableContainer>

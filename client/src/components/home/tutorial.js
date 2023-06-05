@@ -15,7 +15,7 @@ import {
   FcHighPriority,
 } from 'react-icons/fc';
 import React, { forwardRef } from 'react';
-import { Fade, Slide, Zoom } from 'react-reveal';
+import { Fade, Slide, Zoom, Jump } from 'react-reveal';
 import { Link } from 'react-router-dom';
 
 const Feature = ({ title, text, icon }) => {
@@ -46,7 +46,7 @@ const Feature = ({ title, text, icon }) => {
 const Tutorial = forwardRef((props, ref) => {
   return (
     <Box py={10} mb={10} mx={[5, 10, 20]} color="white" ref={ref}>
-      <Slide right>
+      <Slide left>
         <Text fontSize="4xl" fontWeight="bold" mb={5} ml={[null, 20, 20]} mt={10}>
           Cara Menggunakan
         </Text>
@@ -57,7 +57,7 @@ const Tutorial = forwardRef((props, ref) => {
           langkah-langkah untuk menggunakan sistem rekomendasi ini :
         </Text>
       </Slide>
-      <Slide up>
+      <Slide right>
         <SimpleGrid
           columns={{ base: 1, md: 3 }}
           spacing={20}
@@ -88,7 +88,7 @@ const Tutorial = forwardRef((props, ref) => {
           />
         </SimpleGrid>
       </Slide>
-      <Slide up>
+      <Slide left>
         <SimpleGrid
           columns={{ base: 1, md: 3 }}
           spacing={20}

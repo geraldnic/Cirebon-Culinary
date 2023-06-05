@@ -168,7 +168,7 @@ const AddRestaurant = () => {
                     <Flex key={index} alignItems="center" mb={2}>
                       <Select
                         key={index}
-                        placeholder="Pilih Tipe"
+                        placeholder="Pilih Makanan"
                         value={id}
                         onChange={event => {
                           const updatedFoodId = [...foodId];

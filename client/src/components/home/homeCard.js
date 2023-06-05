@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { FcList, FcShop, FcDonate, FcKindle } from 'react-icons/fc';
 import { Link } from 'react-router-dom';
+import { Fade } from 'react-reveal';
 
 const Card = ({ heading, description, icon, href }) => {
   return (
@@ -63,49 +64,51 @@ const Card = ({ heading, description, icon, href }) => {
 const HomeCard = forwardRef((props, ref) => {
   return (
     <Box p={4} bg="#14213D" py="100px" ref={ref}>
-      <Stack spacing={4} as={Container} maxW={'3xl'} textAlign={'center'}>
-        <Heading
-          fontSize={{ base: '2xl', sm: '4xl' }}
-          fontWeight={'bold'}
-          color="#FCA311"
-        >
-          Menu Rekomendasi
-        </Heading>
-        <Text fontSize={{ base: 'sm', sm: 'lg' }} color="#E5E5E5">
-          Silahkan pilih salah satu menu dari 3 pilihan menu rekomendasi, yaitu
-          rekomendasi menu makanan, rekomendasi tempat kuliner, dan rekomendasi
-          menu & tempat kuliner.
-        </Text>
-      </Stack>
+      <Fade up>
+        <Stack spacing={4} as={Container} maxW={'3xl'} textAlign={'center'}>
+          <Heading
+            fontSize={{ base: '2xl', sm: '4xl' }}
+            fontWeight={'bold'}
+            color="#FCA311"
+          >
+            Menu Rekomendasi
+          </Heading>
+          <Text fontSize={{ base: 'sm', sm: 'lg' }} color="#E5E5E5">
+            Silahkan pilih salah satu menu dari 3 pilihan menu rekomendasi,
+            yaitu rekomendasi menu makanan, rekomendasi tempat kuliner, dan
+            rekomendasi menu & tempat kuliner.
+          </Text>
+        </Stack>
 
-      <Container maxW={'90vw'} mt={12}>
-        <Flex flexWrap="wrap" gridGap={6} justify="center">
-          <Card
-            heading={'Menu Makanan'}
-            icon={<Icon as={FcKindle} w={10} h={10} />}
-            description={
-              'Rekomendasi menu makanan berdasarkan tipe, bahan, berkuah / tidak berkuah, dan cara penyajian.'
-            }
-            href={'/findfood'}
-          />
-          <Card
-            heading={'Tempat Kuliner'}
-            icon={<Icon as={FcShop} w={10} h={10} />}
-            description={
-              'Rekomendasi tempat kuliner berdasarkan prioritas terhadap kriteria yang diberikan, yaitu harga, pelayanan, rasa, dan jarak.'
-            }
-            href={'/findrestaurant'}
-          />
-          <Card
-            heading={'Menu & Tempat Kuliner'}
-            icon={<Icon as={FcList} w={10} h={10} />}
-            description={
-              'Rekomendasi menu makanan dan tempat kuliner yang menyediakan makanan yang telah direkomendasikan.'
-            }
-            href={'/rekomendasi'}
-          />
-        </Flex>
-      </Container>
+        <Container maxW={'90vw'} mt={12}>
+          <Flex flexWrap="wrap" gridGap={6} justify="center">
+            <Card
+              heading={'Menu Makanan'}
+              icon={<Icon as={FcKindle} w={10} h={10} />}
+              description={
+                'Rekomendasi menu makanan berdasarkan tipe, bahan, berkuah / tidak berkuah, dan cara penyajian.'
+              }
+              href={'/findfood'}
+            />
+            <Card
+              heading={'Tempat Kuliner'}
+              icon={<Icon as={FcShop} w={10} h={10} />}
+              description={
+                'Rekomendasi tempat kuliner berdasarkan prioritas terhadap kriteria yang diberikan, yaitu harga, pelayanan, rasa, dan jarak.'
+              }
+              href={'/findrestaurant'}
+            />
+            <Card
+              heading={'Menu & Tempat Kuliner'}
+              icon={<Icon as={FcList} w={10} h={10} />}
+              description={
+                'Rekomendasi menu makanan dan tempat kuliner yang menyediakan makanan yang telah direkomendasikan.'
+              }
+              href={'/rekomendasi'}
+            />
+          </Flex>
+        </Container>
+      </Fade>
     </Box>
   );
 });

@@ -141,7 +141,7 @@ const UserList = () => {
                     bg: 'blue.500',
                   }}
                 >
-                  Sign in
+                  Change Password
                 </Button>
               </Stack>
             </Stack>

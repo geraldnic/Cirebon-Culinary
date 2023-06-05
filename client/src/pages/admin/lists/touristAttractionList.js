@@ -26,6 +26,8 @@ import {
   ModalFooter,
   useDisclosure,
   Box,
+  Flex,
+  Input
 } from '@chakra-ui/react';
 
 import { Link } from 'react-router-dom';
@@ -34,6 +36,7 @@ const TouristAttractionList = () => {
   const [places, setPlaces] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedId, setSelectedId] = useState();
+  const [searchName, setSearchName] = useState('');
   const [updateMessage, setUpdateMessage] = useState();
 
   useEffect(() => {
@@ -68,11 +71,21 @@ const TouristAttractionList = () => {
           fontSize="2xl"
           fontWeight="bold"
           align="center"
-          mb={10}
           color="#ADEFD1FF"
         >
           Daftar Tempat Wisata
         </Text>
+        <Flex justifyContent="flex-end" mb={5}>
+          <Input
+            type="text"
+            placeholder="Cari Tempat Kuliner"
+            color="white"
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+            size="sm"
+            w="300px"
+          />
+        </Flex>
         <TableContainer maxH="550px" overflowY="scroll">
           <Table variant="striped" bg="white">
             <Thead
@@ -93,32 +106,36 @@ const TouristAttractionList = () => {
             </Thead>
             <Tbody>
               {places &&
-                places.map(item => {
-                  tableNumber += 1;
-                  return (
-                    <Tr key={item._id}>
-                      <Td>{tableNumber}</Td>
-                      <Td>{item._id}</Td>
-                      <Td>{item.name}</Td>
-                      <Td>{`(${item.position.lat}, ${item.position.lng})`}</Td>
-                      <Td>
-                        <Link to={`edit/${item._id}`}>
-                          <Button variant="solid" colorScheme="blue">
-                            <RiEditBoxFill />
+                places
+                  .filter(item =>
+                    item.name.toLowerCase().includes(searchName.toLowerCase())
+                  )
+                  .map(item => {
+                    tableNumber += 1;
+                    return (
+                      <Tr key={item._id}>
+                        <Td>{tableNumber}</Td>
+                        <Td>{item._id}</Td>
+                        <Td>{item.name}</Td>
+                        <Td>{`(${item.position.lat}, ${item.position.lng})`}</Td>
+                        <Td>
+                          <Link to={`edit/${item._id}`}>
+                            <Button variant="solid" colorScheme="blue">
+                              <RiEditBoxFill />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="solid"
+                            colorScheme="red"
+                            ml={2}
+                            onClick={() => handleDeleteButton(item._id)}
+                          >
+                            <RiDeleteBin2Fill />
                           </Button>
-                        </Link>
-                        <Button
-                          variant="solid"
-                          colorScheme="red"
-                          ml={2}
-                          onClick={() => handleDeleteButton(item._id)}
-                        >
-                          <RiDeleteBin2Fill />
-                        </Button>
-                      </Td>
-                    </Tr>
-                  );
-                })}
+                        </Td>
+                      </Tr>
+                    );
+                  })}
             </Tbody>
           </Table>
         </TableContainer>

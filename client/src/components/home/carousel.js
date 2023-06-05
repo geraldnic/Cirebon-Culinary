@@ -8,10 +8,12 @@ import {
   Icon,
   IconProps,
 } from '@chakra-ui/react';
+import { Fade } from 'react-reveal';
 
 export default function CallToActionWithIllustration(props) {
   return (
     <Container maxW={'100vw'} bg="white" w="100vw">
+      <Fade up>
       <Stack
         textAlign={'center'}
         align={'center'}
@@ -52,6 +54,7 @@ export default function CallToActionWithIllustration(props) {
           <Illustration height={{ sm: '24rem', lg: '28rem' }} />
         </Flex>
       </Stack>
+      </Fade>
     </Container>
   );
 }

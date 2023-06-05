@@ -27,12 +27,14 @@ import {
   useDisclosure,
   Flex,
   Box,
+  Input,
 } from '@chakra-ui/react';
 
 import { Link } from 'react-router-dom';
 
 const FoodList = () => {
-  const [foods, setFoods] = useState();
+  const [foods, setFoods] = useState([]);
+  const [searchName, setSearchName] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedId, setSelectedId] = useState();
   const [updateMessage, setUpdateMessage] = useState();
@@ -67,11 +69,21 @@ const FoodList = () => {
           fontSize="2xl"
           fontWeight="bold"
           align="center"
-          mb={10}
           color="#ADEFD1FF"
         >
           Daftar Menu Makanan
         </Text>
+        <Flex justifyContent="flex-end" mb={5}>
+          <Input
+            type="text"
+            placeholder="Cari Makanan"
+            color="white"
+            value={searchName}
+            onChange={e => setSearchName(e.target.value)}
+            size="sm"
+            w="300px"
+          />
+        </Flex>
         <TableContainer maxH="550px" overflowY="scroll">
           <Table variant="striped" bg="white">
             <Thead
@@ -96,8 +108,11 @@ const FoodList = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {foods &&
-                foods.map(item => {
+              {foods
+                .filter(item =>
+                  item.name.toLowerCase().includes(searchName.toLowerCase())
+                )
+                .map(item => {
                   tableNumber += 1;
                   return (
                     <Tr key={item._id}>

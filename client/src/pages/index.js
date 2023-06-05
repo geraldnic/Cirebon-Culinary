@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Center, Spinner } from '@chakra-ui/react';
-import { Fade, Slide, Zoom } from 'react-reveal';
+import { Fade, Slide, Zoom, Flip, LightSpeed } from 'react-reveal';
 import CallToActionWithIllustration from '../components/home/carousel';
 import Tutorial from '../components/home/tutorial';
 import HomeCard from '../components/home/homeCard';
@@ -52,9 +52,7 @@ const Home = () => {
           <Fade animateOnce={false}>
             <Tutorial ref={tutorialRef} />
           </Fade>
-          <Slide up animateOnce={false}>
             <HomeCard ref={homeCardRef} />
-          </Slide>
         </Box>
       )}
     </>

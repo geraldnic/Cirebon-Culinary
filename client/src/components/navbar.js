@@ -172,7 +172,7 @@ export default function WithSubnavigation() {
           direction={'row'}
           spacing={6}
         >
-          {!cookies.access_token ? (
+          {!cookies.access_token && !localStorage.getItem('username') ? (
             <>
               <ReactLink to={'/auth?mode=signin'}>
                 <Button
@@ -191,10 +191,8 @@ export default function WithSubnavigation() {
               </ReactLink>
             </>
           ) : (
-            <Link>
-              <ReactLink to={'/'}>
+            <Link href={'/'}>
                 <Button onClick={logout}>Logout</Button>
-              </ReactLink>
             </Link>
           )}
         </Stack>
