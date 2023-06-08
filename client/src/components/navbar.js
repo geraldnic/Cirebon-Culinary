@@ -71,7 +71,7 @@ export default function WithSubnavigation() {
     },
   ];
 
-  const navItems = cookies.access_token  && localStorage.getItem('username') ? loggedInNavItems : loggedOutNavItems;
+  const navItems = !cookies.access_token  && !localStorage.getItem('username') ? loggedOutNavItems : loggedInNavItems;
 
   return (
     <Box bg="#212529">
