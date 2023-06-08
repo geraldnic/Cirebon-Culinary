@@ -71,7 +71,7 @@ export default function WithSubnavigation() {
     },
   ];
 
-  const navItems = cookies.access_token ? loggedInNavItems : loggedOutNavItems;
+  const navItems = cookies.access_token  && localStorage.getItem('username') ? loggedInNavItems : loggedOutNavItems;
 
   return (
     <Box bg="#212529">
@@ -102,7 +102,7 @@ export default function WithSubnavigation() {
           justify={{ base: 'center', md: 'start' }}
           align="center"
         >
-          {!cookies.access_token && !localStorage.getItem('username') ? (
+          {!cookies.access_token ? (
             <Link
               _hover={{
                 textDecoration: 'none',
@@ -137,7 +137,7 @@ export default function WithSubnavigation() {
                 textDecoration: 'none',
               }}
             >
-              <ReactLink to="/">
+              <ReactLink to="/admin">
                 <Flex direction="row" align="center">
                   <Box border='2px solid #FFC300' px={2} borderRadius='50px'>
                     <Text
