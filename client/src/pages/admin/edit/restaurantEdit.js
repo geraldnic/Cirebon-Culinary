@@ -15,6 +15,7 @@ import {
   useColorModeValue,
   Center,
   Circle,
+  Select
 } from '@chakra-ui/react';
 
 import { MdRestaurantMenu } from 'react-icons/md';
@@ -37,6 +38,8 @@ const EditRestaurant = () => {
   const [modalProps, setModalProps] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentRestaurant, setCurrentRestaurant] = useState();
+
+  const [food, setFood] = useState();
 
   const { id } = useParams();
 
@@ -61,7 +64,13 @@ const EditRestaurant = () => {
           setCurrentRestaurant(res?.data ?? []);
         });
     };
+    const fetchFood = async () => {
+      axios.get(process.env.REACT_APP_SERVERURL + '/food/getfood').then(res => {
+        setFood(res?.data ?? []);
+      });
+    };
     fetchSpecificRestaurant();
+    fetchFood();
   }, []);
 
   useEffect(() => {
@@ -185,17 +194,29 @@ const EditRestaurant = () => {
                   </FormLabel>
                   {foodId.map((id, index) => (
                     <Flex key={index} alignItems="center" mb={2}>
-                      <Input
+                      <Select
                         key={index}
-                        type="text"
+                        placeholder="Pilih Makanan"
                         value={id}
-                        mt={2}
                         onChange={event => {
                           const updatedFoodId = [...foodId];
                           updatedFoodId[index] = event.target.value;
                           setFoodId(updatedFoodId);
                         }}
-                      />
+                      >
+                        {food &&
+                          food.map(item =>
+                            item._id === foodId ? (
+                              <option key={item._id} value={item._id} selected>
+                                {item.name}
+                              </option>
+                            ) : (
+                              <option key={item._id} value={item._id}>
+                                {item.name}
+                              </option>
+                            )
+                          )}
+                      </Select>
                       {index !== 0 && (
                         <Button
                           size="sm"

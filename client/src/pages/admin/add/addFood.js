@@ -447,7 +447,7 @@ const AddFood = () => {
       <Modal isOpen={isOpen2} onClose={cancelHandler2}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Tambah Bahan</ModalHeader>
+          <ModalHeader>Tambah Penyajian</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <form onSubmit={addServingHandler}>

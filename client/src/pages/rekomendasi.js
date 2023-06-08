@@ -30,6 +30,8 @@ import HistoryTable from '../components/rekomendasi/historyTable';
 import FindRestaurant from '../components/rekomendasi/findRestaurant';
 import { WarningTwoIcon } from '@chakra-ui/icons';
 
+import { useNavigate } from "react-router-dom";
+
 const Rekomendasi = props => {
   const [marker, setMarker] = useState([]);
   const [type, setType] = useState([]);
@@ -39,6 +41,8 @@ const Rekomendasi = props => {
   const [food, setFood] = useState([]);
   const [restaurantResult, setRestaurantResult] = useState();
   const [someRestaurant, setSomeRestaurant] = useState([]);
+
+  const navigate = useNavigate();
 
   const [selectedType, setSelectedType] = useState({
     id: '',
@@ -79,7 +83,7 @@ const Rekomendasi = props => {
     selectedBroth,
     selectedServing,
     selectedFood,
-    restaurantResult
+    restaurantResult,
   ]);
 
   //FETCH MARKER AND FOOD TYPE
@@ -239,6 +243,7 @@ const Rekomendasi = props => {
     setRestaurantResult();
   };
 
+  //IMPLEMENTASI AHP dan TOPSIS
   //AHP
   const CalcValue = (price, service, taste, distance) => {
     let pts, stp, ptt, ttp, ptd, dtp, stt, tts, std, dts, ttd, dtt;
@@ -366,214 +371,219 @@ const Rekomendasi = props => {
     CR = CI / 0.9; //CR <= 0.1 === konsisten
     console.log(eigen);
 
-    // Implementasi TOPSIS
-    // Matrix Keputusan
-    const decisionM = someRestaurant.map(item => {
-      const distance = getDistance(
-        {
-          latitude: selectedPlace.location.lat,
-          longitude: selectedPlace.location.lng,
-        },
-        { latitude: item.position.lat, longitude: item.position.lng }
-      );
+    if (CR > 0.1) {
+      alert('Prioritas tidak konsisten! Silahkan coba lagi.');
+      navigate('/rekomendasi');
+    } else {
+      // Implementasi TOPSIS
+      // Matrix Keputusan
+      const decisionM = someRestaurant.map(item => {
+        const distance = getDistance(
+          {
+            latitude: selectedPlace.location.lat,
+            longitude: selectedPlace.location.lng,
+          },
+          { latitude: item.position.lat, longitude: item.position.lng }
+        );
 
-      let priceValue;
-      if (item.price <= 1) {
-        priceValue = 1;
-      } else if (item.price > 1 && item.price <= 2) {
-        priceValue = 2;
-      } else if (item.price > 2 && item.price <= 3) {
-        priceValue = 3;
-      } else if (item.price > 3 && item.price <= 4) {
-        priceValue = 4;
-      } else {
-        priceValue = 5;
-      }
+        let priceValue;
+        if (item.price <= 1) {
+          priceValue = 1;
+        } else if (item.price > 1 && item.price <= 2) {
+          priceValue = 2;
+        } else if (item.price > 2 && item.price <= 3) {
+          priceValue = 3;
+        } else if (item.price > 3 && item.price <= 4) {
+          priceValue = 4;
+        } else {
+          priceValue = 5;
+        }
 
-      let serviceValue;
-      if (item.service <= 1) {
-        serviceValue = 1;
-      } else if (item.service > 1 && item.service <= 2) {
-        serviceValue = 2;
-      } else if (item.service > 2 && item.service <= 3) {
-        serviceValue = 3;
-      } else if (item.service > 3 && item.service <= 4) {
-        serviceValue = 4;
-      } else {
-        serviceValue = 5;
-      }
+        let serviceValue;
+        if (item.service <= 1) {
+          serviceValue = 1;
+        } else if (item.service > 1 && item.service <= 2) {
+          serviceValue = 2;
+        } else if (item.service > 2 && item.service <= 3) {
+          serviceValue = 3;
+        } else if (item.service > 3 && item.service <= 4) {
+          serviceValue = 4;
+        } else {
+          serviceValue = 5;
+        }
 
-      let tasteValue;
-      if (item.taste <= 1) {
-        tasteValue = 1;
-      } else if (item.taste > 1 && item.taste <= 2) {
-        tasteValue = 2;
-      } else if (item.taste > 2 && item.taste <= 3) {
-        tasteValue = 3;
-      } else if (item.taste > 3 && item.taste <= 4) {
-        tasteValue = 4;
-      } else {
-        tasteValue = 5;
-      }
+        let tasteValue;
+        if (item.taste <= 1) {
+          tasteValue = 1;
+        } else if (item.taste > 1 && item.taste <= 2) {
+          tasteValue = 2;
+        } else if (item.taste > 2 && item.taste <= 3) {
+          tasteValue = 3;
+        } else if (item.taste > 3 && item.taste <= 4) {
+          tasteValue = 4;
+        } else {
+          tasteValue = 5;
+        }
 
-      let distanceValue;
-      if (distance > 8000) {
-        distanceValue = 1;
-      } else if (distance <= 8000 && distance > 6000) {
-        distanceValue = 2;
-      } else if (distance <= 6000 && distance > 4000) {
-        distanceValue = 3;
-      } else if (distance <= 4000 && distance > 2000) {
-        distanceValue = 4;
-      } else {
-        distanceValue = 5;
-      }
-      return [priceValue, serviceValue, tasteValue, distanceValue];
-    });
+        let distanceValue;
+        if (distance > 8000) {
+          distanceValue = 1;
+        } else if (distance <= 8000 && distance > 6000) {
+          distanceValue = 2;
+        } else if (distance <= 6000 && distance > 4000) {
+          distanceValue = 3;
+        } else if (distance <= 4000 && distance > 2000) {
+          distanceValue = 4;
+        } else {
+          distanceValue = 5;
+        }
+        return [priceValue, serviceValue, tasteValue, distanceValue];
+      });
 
-    console.log(decisionM);
+      console.log(decisionM);
 
-    //Normalisasi Matrix Keputusan
-    let x1 = 0;
-    for (let i = 0; i < decisionM.length; i++) {
-      x1 = x1 + Math.pow(decisionM[i][0], 2);
-    }
-    x1 = Math.sqrt(x1);
-
-    let x2 = 0;
-    for (let i = 0; i < decisionM.length; i++) {
-      x2 = x2 + Math.pow(decisionM[i][1], 2);
-    }
-    x2 = Math.sqrt(x2);
-
-    let x3 = 0;
-    for (let i = 0; i < decisionM.length; i++) {
-      x3 = x3 + Math.pow(decisionM[i][2], 2);
-    }
-    x3 = Math.sqrt(x3);
-
-    let x4 = 0;
-    for (let i = 0; i < decisionM.length; i++) {
-      x4 = x4 + Math.pow(decisionM[i][3], 2);
-    }
-    x4 = Math.sqrt(x4);
-
-    //Normalisasi Baris 1
-    for (let i = 0; i < decisionM.length; i++) {
-      decisionM[i][0] = decisionM[i][0] / x1;
-    }
-
-    //Normalisasi Baris 2
-    for (let i = 0; i < decisionM.length; i++) {
-      decisionM[i][1] = decisionM[i][1] / x2;
-    }
-
-    //Normalisasi Baris 3
-    for (let i = 0; i < decisionM.length; i++) {
-      decisionM[i][2] = decisionM[i][2] / x3;
-    }
-
-    //Normalisasi Baris 4
-    for (let i = 0; i < decisionM.length; i++) {
-      decisionM[i][3] = decisionM[i][3] / x4;
-    }
-
-    console.log(decisionM);
-
-    //Normalisasi Matrix Terbobot
-    for (let j = 0; j < 4; j++) {
+      //Normalisasi Matrix Keputusan
+      let x1 = 0;
       for (let i = 0; i < decisionM.length; i++) {
-        decisionM[i][j] = decisionM[i][j] * eigen[j];
+        x1 = x1 + Math.pow(decisionM[i][0], 2);
       }
-    }
-    console.log(decisionM);
+      x1 = Math.sqrt(x1);
 
-    //Mencari Solusi Ideal Positif dan Negatif
-    let idealSolution = [];
-    let aPlus = [];
-    let aMinus = [];
+      let x2 = 0;
+      for (let i = 0; i < decisionM.length; i++) {
+        x2 = x2 + Math.pow(decisionM[i][1], 2);
+      }
+      x2 = Math.sqrt(x2);
 
-    //Solusi Ideal Positif
-    for (let j = 0; j < 4; j++) {
-      let max = decisionM[0][j];
-      for (let i = 1; i < decisionM.length; i++) {
-        const currentValue = decisionM[i][j];
-        if (currentValue > max) {
-          max = currentValue;
+      let x3 = 0;
+      for (let i = 0; i < decisionM.length; i++) {
+        x3 = x3 + Math.pow(decisionM[i][2], 2);
+      }
+      x3 = Math.sqrt(x3);
+
+      let x4 = 0;
+      for (let i = 0; i < decisionM.length; i++) {
+        x4 = x4 + Math.pow(decisionM[i][3], 2);
+      }
+      x4 = Math.sqrt(x4);
+
+      //Normalisasi Baris 1
+      for (let i = 0; i < decisionM.length; i++) {
+        decisionM[i][0] = decisionM[i][0] / x1;
+      }
+
+      //Normalisasi Baris 2
+      for (let i = 0; i < decisionM.length; i++) {
+        decisionM[i][1] = decisionM[i][1] / x2;
+      }
+
+      //Normalisasi Baris 3
+      for (let i = 0; i < decisionM.length; i++) {
+        decisionM[i][2] = decisionM[i][2] / x3;
+      }
+
+      //Normalisasi Baris 4
+      for (let i = 0; i < decisionM.length; i++) {
+        decisionM[i][3] = decisionM[i][3] / x4;
+      }
+
+      console.log(decisionM);
+
+      //Normalisasi Matrix Terbobot
+      for (let j = 0; j < 4; j++) {
+        for (let i = 0; i < decisionM.length; i++) {
+          decisionM[i][j] = decisionM[i][j] * eigen[j];
         }
       }
-      aPlus[j] = max;
-    }
+      console.log(decisionM);
 
-    //Solusi Ideal Negatif
-    for (let j = 0; j < 4; j++) {
-      let min = decisionM[0][j];
-      for (let i = 1; i < decisionM.length; i++) {
-        const currentValue = decisionM[i][j];
-        if (currentValue < min) {
-          min = currentValue;
+      //Mencari Solusi Ideal Positif dan Negatif
+      let idealSolution = [];
+      let aPlus = [];
+      let aMinus = [];
+
+      //Solusi Ideal Positif
+      for (let j = 0; j < 4; j++) {
+        let max = decisionM[0][j];
+        for (let i = 1; i < decisionM.length; i++) {
+          const currentValue = decisionM[i][j];
+          if (currentValue > max) {
+            max = currentValue;
+          }
         }
+        aPlus[j] = max;
       }
-      aMinus[j] = min;
-    }
 
-    // Solusi Ideal Positif dan Negatif
-    idealSolution = [aPlus, aMinus];
-    console.log(idealSolution);
-
-    //Menghitung Jarak Solusi Ideal Positif dan Negatif
-    //Jarak Solusi Ideal Positif
-    let dPlus = 0;
-    let dMinus = 0;
-    let plusTemp = 0;
-    let minusTemp = 0;
-    const d = decisionM.map(item => {
+      //Solusi Ideal Negatif
       for (let j = 0; j < 4; j++) {
-        plusTemp = plusTemp + Math.pow(item[j] - idealSolution[0][j], 2);
+        let min = decisionM[0][j];
+        for (let i = 1; i < decisionM.length; i++) {
+          const currentValue = decisionM[i][j];
+          if (currentValue < min) {
+            min = currentValue;
+          }
+        }
+        aMinus[j] = min;
       }
-      for (let j = 0; j < 4; j++) {
-        minusTemp = minusTemp + Math.pow(item[j] - idealSolution[1][j], 2);
+
+      // Solusi Ideal Positif dan Negatif
+      idealSolution = [aPlus, aMinus];
+      console.log(idealSolution);
+
+      //Menghitung Jarak Solusi Ideal Positif dan Negatif
+      //Jarak Solusi Ideal Positif
+      let dPlus = 0;
+      let dMinus = 0;
+      let plusTemp = 0;
+      let minusTemp = 0;
+      const d = decisionM.map(item => {
+        for (let j = 0; j < 4; j++) {
+          plusTemp = plusTemp + Math.pow(item[j] - idealSolution[0][j], 2);
+        }
+        for (let j = 0; j < 4; j++) {
+          minusTemp = minusTemp + Math.pow(item[j] - idealSolution[1][j], 2);
+        }
+        minusTemp = Math.sqrt(minusTemp);
+        dMinus = minusTemp;
+
+        plusTemp = Math.sqrt(plusTemp);
+        dPlus = plusTemp;
+
+        plusTemp = 0;
+        minusTemp = 0;
+
+        console.log(item);
+        return [dPlus, dMinus];
+      });
+
+      console.log(d);
+
+      //Mencari Nilai Preferensi
+      //Matrix Preferensi
+      let pref = [];
+      let finalCtr = -1;
+      for (let i = 0; i < decisionM.length; i++) {
+        pref[i] = d[i][1] / (d[i][1] + d[i][0]);
       }
-      minusTemp = Math.sqrt(minusTemp);
-      dMinus = minusTemp;
 
-      plusTemp = Math.sqrt(plusTemp);
-      dPlus = plusTemp;
+      let preferenceM = [];
+      preferenceM = someRestaurant.map(item => {
+        finalCtr++;
+        return {
+          id: item._id,
+          name: item.name,
+          imageUrl: item.imageUrl,
+          price: item.price,
+          service: item.service,
+          taste: item.taste,
+          position: item.position,
+          score: pref[finalCtr],
+        };
+      });
 
-      plusTemp = 0;
-      minusTemp = 0;
-
-      console.log(item);
-      return [dPlus, dMinus];
-    });
-
-    console.log(d);
-
-    //Mencari Nilai Preferensi
-    //Matrix Preferensi
-    let pref = [];
-    let finalCtr = -1;
-    for (let i = 0; i < decisionM.length; i++) {
-      pref[i] = d[i][1] / (d[i][1] + d[i][0]);
+      let sortedPreferences = preferenceM.sort((a, b) => b.score - a.score);
+      setRestaurantResult(sortedPreferences);
     }
-
-    let preferenceM = [];
-    preferenceM = someRestaurant.map(item => {
-      finalCtr++;
-      return {
-        id: item._id,
-        name: item.name,
-        imageUrl: item.imageUrl,
-        price: item.price,
-        service: item.service,
-        taste: item.taste,
-        position: item.position,
-        score: pref[finalCtr],
-      };
-    });
-
-    let sortedPreferences = preferenceM.sort((a, b) => b.score - a.score);
-    setRestaurantResult(sortedPreferences);
   };
 
   const renderMapComponent = () => {

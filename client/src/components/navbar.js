@@ -102,7 +102,7 @@ export default function WithSubnavigation() {
           justify={{ base: 'center', md: 'start' }}
           align="center"
         >
-          {!cookies.access_token ? (
+          {!cookies.access_token && !localStorage.getItem('username') ? (
             <Link
               _hover={{
                 textDecoration: 'none',
